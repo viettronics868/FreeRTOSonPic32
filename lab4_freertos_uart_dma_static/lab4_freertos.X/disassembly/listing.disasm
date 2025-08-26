@@ -1,0 +1,1435 @@
+Disassembly Listing for lab4_freertos
+Generated From:
+C:/Users/tuiday/Documents/Lab-FreeRTOS/lab4_freertos_uart_dma_static/lab4_freertos.X/dist/default/debug/lab4_freertos.X.debug.elf
+Jul 17, 2025 9:07:11 PM
+
+---  c:/users/tuiday/documents/lab-freertos/lab4_freertos_uart_dma_static/src/main.c  -------------------
+1:                   /*******************************************************************************
+2:                     Main Source File
+3:                   
+4:                    Author: L&K 
+5:                   
+6:                     File Name:
+7:                       main.c
+8:                   
+9:                     Summary:
+10:                      This file contains the "main" function for a project.
+11:                  
+12:                    Description:
+13:                      This file contains the "main" function for a project.  The
+14:                      "main" function calls the "SYS_Initialize" function to initialize the state
+15:                      machines of all modules in the system. For showing debug messages, we are using UART6 and DMA2
+16:                   *******************************************************************************/
+17:                  
+18:                  // *****************************************************************************
+19:                  // *****************************************************************************
+20:                  // Section: Included Files
+21:                  // *****************************************************************************
+22:                  // *****************************************************************************
+23:                  
+24:                  #include <stddef.h>                     // Defines NULL
+25:                  #include <stdbool.h>                    // Defines true
+26:                  #include <stdlib.h>                     // Defines EXIT_FAILURE
+27:                  #include "definitions.h"                // SYS function prototypes
+28:                  #include <stdint.h>
+29:                  
+30:                  #include <string.h>
+31:                  #include "FreeRTOS.h"
+32:                  #include "task.h"
+33:                  #include "device_cache.h"
+34:                  #include "semphr.h"
+35:                  
+36:                  
+37:                  static StackType_t xTaskHighTCBBuffer[configMINIMAL_STACK_SIZE];
+38:                  static StackType_t xTaskLowTCBBuffer[configMINIMAL_STACK_SIZE];
+39:                  
+40:                  static StaticTask_t xTaskHighStaticBuffer;
+41:                  static StaticTask_t xTaskLowStaticBuffer;
+42:                  
+43:                  static void prvTaskHighFunction(void * pvParams);
+44:                  static void prvTaskLowFunction(void * pvParams);
+45:                  
+46:                  SemaphoreHandle_t xU6D2Mutex;
+47:                  SemaphoreHandle_t xU6D2Bin;
+48:                  
+49:                  static volatile bool iU6TxVoid = true;
+50:                  static uint8_t __attribute__ ((aligned (16))) U6TxBuffer[100] = {0};
+51:                  
+52:                  static void U6D2Handler(DMAC_TRANSFER_EVENT event, uintptr_t contextHandle){
+53:                      if (event == DMAC_TRANSFER_EVENT_COMPLETE){
+54:                          //iU6TxVoid = true;
+55:                          
+56:                          BaseType_t xNextTask = pdFALSE;
+57:                          xSemaphoreGiveFromISR(xU6D2Bin, &xNextTask);
+58:                          portEND_SWITCHING_ISR(xNextTask);
+59:                          
+60:                      }
+61:                  }
+62:                  // *****************************************************************************
+63:                  // *****************************************************************************
+64:                  // Section: Main Entry Point
+65:                  // *****************************************************************************
+66:                  // *****************************************************************************
+67:                  
+68:                  int main ( void )
+69:                  {
+70:                      /* Initialize all modules */
+71:                      SYS_Initialize ( NULL );
+72:                      
+73:                      xU6D2Mutex = xSemaphoreCreateMutex();
+74:                      xU6D2Bin = xSemaphoreCreateBinary();
+75:                  
+76:                      const char * lab_msg = "Lab 4-FreeRTOS-UART6+DMA2 \r\n";
+77:                      const char * debug_msg = "cannot create Task";
+78:                      //TaskHandle_t xTaskStaticResult = NULL;
+79:                      
+80:                      xSemaphoreTake(xU6D2Mutex, portMAX_DELAY);
+81:                      //if (xSemaphoreTake(xU6D2Mutex, portMAX_DELAY) == pdTRUE)
+82:                      {
+83:                      
+84:                              DMAC_ChannelCallbackRegister(
+85:                                                                                  DMAC_CHANNEL_2,
+86:                                                                                  U6D2Handler,
+87:                                                                                  0);
+88:                              strcpy((char *) U6TxBuffer, lab_msg);
+89:                              DCACHE_CLEAN_BY_ADDR(
+90:                                                                                  (uint32_t) U6TxBuffer,
+91:                                                                                  strlen((const char *) U6TxBuffer));
+92:                             // iU6TxVoid = false;
+93:                              DMAC_ChannelTransfer(
+94:                                                                      DMAC_CHANNEL_2,
+95:                                                                      (const void *) U6TxBuffer,
+96:                                                                      strlen((const char *) U6TxBuffer),
+97:                                                                      (const void *) &U6TXREG, 1,1);
+98:                      
+99:                      //while ( !iU6TxVoid ){};
+100:                             xSemaphoreTake(xU6D2Bin, portMAX_DELAY);
+101:                     
+102:                             xSemaphoreGive(xU6D2Mutex);
+103:                     }
+104:                     
+105:                     //create Task High - statically
+106:                     TaskHandle_t xTaskStaticResult = NULL;
+107:                     xTaskStaticResult = xTaskCreateStatic(
+108:                                                                                 prvTaskHighFunction,
+109:                                                                                 "Task High",
+110:                                                                                 configMINIMAL_STACK_SIZE,
+111:                                                                                 NULL,
+112:                                                                                 tskIDLE_PRIORITY,
+113:                                                                                  //1,
+114:                                                                                  &(xTaskHighTCBBuffer[0]),
+115:                                                                                  &(xTaskHighStaticBuffer));
+116:                     if (xTaskStaticResult == NULL){
+117:                         strcpy((char *) U6TxBuffer, debug_msg);
+118:                         DCACHE_CLEAN_BY_ADDR(
+119:                                                                             (uint32_t) U6TxBuffer,
+120:                                                                             strlen((const char *) U6TxBuffer));
+121:                         iU6TxVoid = false;
+122:                         DMAC_ChannelTransfer(
+123:                                                                 DMAC_CHANNEL_2,
+124:                                                                 (const void *) U6TxBuffer,
+125:                                                                 strlen((const char *) U6TxBuffer),
+126:                                                                 (const void *) &U6TXREG, 1, 1);
+127:                     }
+128:                     
+129:                     //create Task Low
+130:                     xTaskStaticResult = xTaskCreateStatic(
+131:                                                                                 prvTaskLowFunction,
+132:                                                                                 "Task Low",
+133:                                                                                 configMINIMAL_STACK_SIZE,
+134:                                                                                 NULL,
+135:                                                                                 tskIDLE_PRIORITY,
+136:                                                                                 //1,
+137:                                                                                 &(xTaskLowTCBBuffer[0]),
+138:                                                                                 &(xTaskLowStaticBuffer));
+139:                     if (xTaskStaticResult == NULL){
+140:                         strcpy((char *) U6TxBuffer, debug_msg);
+141:                         DCACHE_CLEAN_BY_ADDR(
+142:                                                                             (uint32_t) U6TxBuffer,
+143:                                                                             strlen((const char *) U6TxBuffer));
+144:                         iU6TxVoid = false;
+145:                         DMAC_ChannelTransfer(
+146:                                                                 DMAC_CHANNEL_2,
+147:                                                                 (const void *) U6TxBuffer,
+148:                                                                  strlen((const char *) U6TxBuffer),
+149:                                                                 ((const void *) &U6TXREG), 1, 1);
+150:                     }
+151:                     
+152:                     vTaskStartScheduler();
+153:                 //    {
+154:                 //        /* Maintain state machines of all polled MPLAB Harmony modules. */
+155:                 //        SYS_Tasks ( );
+156:                 //    }
+157:                 
+158:                     /* Execution should not come here during normal operation */
+159:                 
+160:                     return ( EXIT_FAILURE );
+161:                 }
+162:                 
+163:                 static void prvTaskHighFunction(void * pvParams){
+164:                     (void ) pvParams;
+165:                     for (;;){
+166:                                 const char * taskHigh_greet = "task High running... \r\n";
+167:                                 
+168:                                 xSemaphoreTake(xU6D2Mutex, portMAX_DELAY);
+169:                                 //if (xSemaphoreTake(xU6D2Mutex, portMAX_DELAY) == pdTRUE)
+170:                                 {
+171:                                     strcpy((char *)U6TxBuffer, taskHigh_greet);
+172:                                     DCACHE_CLEAN_BY_ADDR(  
+173:                                                                                         (uint32_t) U6TxBuffer,
+174:                                                                                         strlen((const char *) U6TxBuffer));
+175:                                     //iU6TxVoid = false;
+176:                                     DMAC_ChannelTransfer(
+177:                                                                             DMAC_CHANNEL_2,
+178:                                                                             (const void *) U6TxBuffer,
+179:                                                                             strlen((const char *) U6TxBuffer),
+180:                                                                             (const void *) &U6TXREG, 1, 1);
+181:                                 
+182:                                     xSemaphoreTake(xU6D2Bin, portMAX_DELAY);
+183:                 
+184:                                     xSemaphoreGive(xU6D2Mutex);
+185:                                 }
+186:                                 //while(!iU6TxVoid){};
+187:                                 vTaskDelay(pdMS_TO_TICKS(1000));
+188:                     }
+189:                 }
+190:                 
+191:                 static void prvTaskLowFunction(void * pvParams){
+192:                     (void) pvParams;
+193:                     for (;;){
+194:                                 const char * taskLow_greet = "task Low running ...\r\n";
+195:                                 
+196:                                 
+197:                                 xSemaphoreTake(xU6D2Mutex, portMAX_DELAY);
+198:                                 //if (xSemaphoreTake(xU6D2Mutex, portMAX_DELAY) == pdTRUE)
+199:                                 {
+200:                                     //xSemaphoreTake(xU6D2Mutex, portMAX_DELAY);
+201:                 
+202:                                     strcpy((char *) U6TxBuffer, taskLow_greet);
+203:                                     DCACHE_CLEAN_BY_ADDR(
+204:                                                                                         (uint32_t) U6TxBuffer,
+205:                                                                                         strlen((const char *) U6TxBuffer));
+206:                                     iU6TxVoid = false;
+207:                                     DMAC_ChannelTransfer(
+208:                                                                             DMAC_CHANNEL_2,
+209:                                                                             (const void *) U6TxBuffer,
+210:                                                                             strlen((const char *) U6TxBuffer),
+211:                                                                             (const void *) &U6TXREG, 1, 1);
+212:                                     xSemaphoreTake(xU6D2Bin, portMAX_DELAY);
+213:                 
+214:                                     xSemaphoreGive(xU6D2Mutex);
+215:                                 }
+216:                                 
+217:                                 //while(!iU6TxVoid){};
+218:                                 vTaskDelay(pdMS_TO_TICKS(1000));
+219:                     }
+220:                 }
+221:                 
+222:                 
+223:                 /*******************************************************************************
+224:                  End of File
+225:                 */
+226:                 
+-----*  Optimizer-Generated Procedural Abstractions  *----------------------------------------------
+9D001B38  27BDFFD0   ADDIU SP, SP, -48
+9D001B3C  AFBF002C   SW RA, 44(SP)
+9D001B40  AFB10028   SW S1, 40(SP)
+9D001B44  AFB00024   SW S0, 36(SP)
+9D001B48  0F401140   JAL SYS_Initialize
+9D001B4C  00002025   OR A0, ZERO, ZERO
+9D001B50  0F4012E9   JAL xQueueCreateMutex
+9D001B54  24040001   ADDIU A0, ZERO, 1
+9D001B58  AF828040   SW V0, -32704(GP)
+9D001B5C  24060003   ADDIU A2, ZERO, 3
+9D001B60  00002825   OR A1, ZERO, ZERO
+9D001B64  0F40107A   JAL xQueueGenericCreate
+9D001B68  24040001   ADDIU A0, ZERO, 1
+9D001B6C  AF82803C   SW V0, -32708(GP)
+9D001B70  2405FFFF   ADDIU A1, ZERO, -1
+9D001B74  0F400777   JAL xQueueSemaphoreTake
+9D001B78  8F848040   LW A0, -32704(GP)
+9D001B7C  00003025   OR A2, ZERO, ZERO
+9D001B80  3C059D00   LUI A1, -25344
+9D001B84  24A54818   ADDIU A1, A1, 18456
+9D001B88  0F40138A   JAL DMAC_ChannelCallbackRegister
+9D001B8C  24040002   ADDIU A0, ZERO, 2
+9D001B90  3C108000   LUI S0, -32768
+9D001B94  3C029D00   LUI V0, -25344
+9D001B98  8C494A0C   LW T1, 18956(V0)
+9D001B9C  24424A0C   ADDIU V0, V0, 18956
+9D001BA0  8C480004   LW T0, 4(V0)
+9D001BA4  8C470008   LW A3, 8(V0)
+9D001BA8  8C46000C   LW A2, 12(V0)
+9D001BAC  8C450010   LW A1, 16(V0)
+9D001BB0  8C440014   LW A0, 20(V0)
+9D001BB4  8C430018   LW V1, 24(V0)
+9D001BB8  AE097FE0   SW T1, 32736(S0)
+9D001BBC  26107FE0   ADDIU S0, S0, 32736
+9D001BC0  AE080004   SW T0, 4(S0)
+9D001BC4  AE070008   SW A3, 8(S0)
+9D001BC8  AE06000C   SW A2, 12(S0)
+9D001BCC  AE050010   SW A1, 16(S0)
+9D001BD0  AE040014   SW A0, 20(S0)
+9D001BD4  AE030018   SW V1, 24(S0)
+9D001BD8  9042001C   LBU V0, 28(V0)
+9D001BDC  A202001C   SB V0, 28(S0)
+9D001BE0  0F40133C   JAL strlen
+9D001BE4  02002025   OR A0, S0, ZERO
+9D001BE8  00402825   OR A1, V0, ZERO
+9D001BEC  0F40135D   JAL CACHE_DataCacheClean
+9D001BF0  02002025   OR A0, S0, ZERO
+9D001BF4  0F40133C   JAL strlen
+9D001BF8  02002025   OR A0, S0, ZERO
+9D001BFC  24030001   ADDIU V1, ZERO, 1
+9D001C00  AFA30014   SW V1, 20(SP)
+9D001C04  AFA30010   SW V1, 16(SP)
+9D001C08  3C07BF82   LUI A3, -16510
+9D001C0C  24E72A20   ADDIU A3, A3, 10784
+9D001C10  00403025   OR A2, V0, ZERO
+9D001C14  02002825   OR A1, S0, ZERO
+9D001C18  0F400CD0   JAL DMAC_ChannelTransfer
+9D001C1C  24040002   ADDIU A0, ZERO, 2
+9D001C20  2405FFFF   ADDIU A1, ZERO, -1
+9D001C24  0F400777   JAL xQueueSemaphoreTake
+9D001C28  8F84803C   LW A0, -32708(GP)
+9D001C2C  00003825   OR A3, ZERO, ZERO
+9D001C30  00003025   OR A2, ZERO, ZERO
+9D001C34  00002825   OR A1, ZERO, ZERO
+9D001C38  0F4008FB   JAL xQueueGenericSend
+9D001C3C  8F848040   LW A0, -32704(GP)
+9D001C40  3C028001   LUI V0, -32767
+9D001C44  24428100   ADDIU V0, V0, -32512
+9D001C48  AFA20018   SW V0, 24(SP)
+9D001C4C  3C028000   LUI V0, -32768
+9D001C50  24427B60   ADDIU V0, V0, 31584
+9D001C54  AFA20014   SW V0, 20(SP)
+9D001C58  AFA00010   SW ZERO, 16(SP)
+9D001C5C  00003825   OR A3, ZERO, ZERO
+9D001C60  24060080   ADDIU A2, ZERO, 128
+9D001C64  3C059D00   LUI A1, -25344
+9D001C68  24A54A2C   ADDIU A1, A1, 18988
+9D001C6C  3C049D00   LUI A0, -25344
+9D001C70  0F40126F   JAL xTaskCreateStatic
+9D001C74  24843A28   ADDIU A0, A0, 14888
+9D001C78  14400020   BNE V0, ZERO, main
+9D001C7C  3C118000   LUI S1, -32768
+9D001C80  3C029D00   LUI V0, -25344
+9D001C84  8C464A38   LW A2, 19000(V0)
+9D001C88  24424A38   ADDIU V0, V0, 19000
+9D001C8C  8C450004   LW A1, 4(V0)
+9D001C90  8C440008   LW A0, 8(V0)
+9D001C94  8C43000C   LW V1, 12(V0)
+9D001C98  AE267FE0   SW A2, 32736(S1)
+9D001C9C  AE050004   SW A1, 4(S0)
+9D001CA0  AE040008   SW A0, 8(S0)
+9D001CA4  AE03000C   SW V1, 12(S0)
+9D001CA8  94430010   LHU V1, 16(V0)
+9D001CAC  A6030010   SH V1, 16(S0)
+9D001CB0  90420012   LBU V0, 18(V0)
+9D001CB4  A2020012   SB V0, 18(S0)
+9D001CB8  0F40133C   JAL strlen
+9D001CBC  02002025   OR A0, S0, ZERO
+9D001CC0  00402825   OR A1, V0, ZERO
+9D001CC4  0F40135D   JAL CACHE_DataCacheClean
+9D001CC8  02002025   OR A0, S0, ZERO
+9D001CCC  A3808010   SB ZERO, -32752(GP)
+9D001CD0  0F40133C   JAL strlen
+9D001CD4  02002025   OR A0, S0, ZERO
+9D001CD8  24030001   ADDIU V1, ZERO, 1
+9D001CDC  AFA30014   SW V1, 20(SP)
+9D001CE0  AFA30010   SW V1, 16(SP)
+9D001CE4  3C07BF82   LUI A3, -16510
+9D001CE8  24E72A20   ADDIU A3, A3, 10784
+9D001CEC  00403025   OR A2, V0, ZERO
+9D001CF0  02002825   OR A1, S0, ZERO
+9D001CF4  0F400CD0   JAL DMAC_ChannelTransfer
+9D001CF8  24040002   ADDIU A0, ZERO, 2
+9D001CFC  3C028001   LUI V0, -32767
+9D001D00  244280A8   ADDIU V0, V0, -32600
+9D001D04  AFA20018   SW V0, 24(SP)
+9D001D08  3C028000   LUI V0, -32768
+9D001D0C  24427960   ADDIU V0, V0, 31072
+9D001D10  AFA20014   SW V0, 20(SP)
+9D001D14  AFA00010   SW ZERO, 16(SP)
+9D001D18  00003825   OR A3, ZERO, ZERO
+9D001D1C  24060080   ADDIU A2, ZERO, 128
+9D001D20  3C059D00   LUI A1, -25344
+9D001D24  24A54A4C   ADDIU A1, A1, 19020
+9D001D28  3C049D00   LUI A0, -25344
+9D001D2C  0F40126F   JAL xTaskCreateStatic
+9D001D30  24843940   ADDIU A0, A0, 14656
+9D001D34  14400021   BNE V0, ZERO, main
+9D001D38  3C118000   LUI S1, -32768
+9D001D3C  3C029D00   LUI V0, -25344
+9D001D40  8C464A38   LW A2, 19000(V0)
+9D001D44  24424A38   ADDIU V0, V0, 19000
+9D001D48  8C450004   LW A1, 4(V0)
+9D001D4C  8C440008   LW A0, 8(V0)
+9D001D50  8C43000C   LW V1, 12(V0)
+9D001D54  AE267FE0   SW A2, 32736(S1)
+9D001D58  26317FE0   ADDIU S1, S1, 32736
+9D001D5C  AE250004   SW A1, 4(S1)
+9D001D60  AE240008   SW A0, 8(S1)
+9D001D64  AE23000C   SW V1, 12(S1)
+9D001D68  94430010   LHU V1, 16(V0)
+9D001D6C  A6230010   SH V1, 16(S1)
+9D001D70  90420012   LBU V0, 18(V0)
+9D001D74  A2220012   SB V0, 18(S1)
+9D001D78  0F40133C   JAL strlen
+9D001D7C  02202025   OR A0, S1, ZERO
+9D001D80  00402825   OR A1, V0, ZERO
+9D001D84  0F40135D   JAL CACHE_DataCacheClean
+9D001D88  02002025   OR A0, S0, ZERO
+9D001D8C  A3808010   SB ZERO, -32752(GP)
+9D001D90  0F40133C   JAL strlen
+9D001D94  02202025   OR A0, S1, ZERO
+9D001D98  24030001   ADDIU V1, ZERO, 1
+9D001D9C  AFA30014   SW V1, 20(SP)
+9D001DA0  AFA30010   SW V1, 16(SP)
+9D001DA4  3C07BF82   LUI A3, -16510
+9D001DA8  24E72A20   ADDIU A3, A3, 10784
+9D001DAC  00403025   OR A2, V0, ZERO
+9D001DB0  02202825   OR A1, S1, ZERO
+9D001DB4  0F400CD0   JAL DMAC_ChannelTransfer
+9D001DB8  24040002   ADDIU A0, ZERO, 2
+9D001DBC  0F401193   JAL vTaskStartScheduler
+9D001DC0  00000000   NOP
+9D003940  27BDFFD0   ADDIU SP, SP, -48
+9D003944  AFBF002C   SW RA, 44(SP)
+9D003948  AFB40028   SW S4, 40(SP)
+9D00394C  AFB30024   SW S3, 36(SP)
+9D003950  AFB20020   SW S2, 32(SP)
+9D003954  AFB1001C   SW S1, 28(SP)
+9D003958  AFB00018   SW S0, 24(SP)
+9D00395C  3C138000   LUI S3, -32768
+9D003960  3C129D00   LUI S2, -25344
+9D003964  8E544FC0   LW S4, 20416(S2)
+9D003968  3C11BF82   LUI S1, -16510
+9D00396C  26312A20   ADDIU S1, S1, 10784
+9D003970  2405FFFF   ADDIU A1, ZERO, -1
+9D003974  0F400777   JAL xQueueSemaphoreTake
+9D003978  8F848040   LW A0, -32704(GP)
+9D00397C  26424FC0   ADDIU V0, S2, 20416
+9D003980  8C460004   LW A2, 4(V0)
+9D003984  8C450008   LW A1, 8(V0)
+9D003988  8C44000C   LW A0, 12(V0)
+9D00398C  8C430010   LW V1, 16(V0)
+9D003990  AE747FE0   SW S4, 32736(S3)
+9D003994  26707FE0   ADDIU S0, S3, 32736
+9D003998  AE060004   SW A2, 4(S0)
+9D00399C  AE050008   SW A1, 8(S0)
+9D0039A0  AE04000C   SW A0, 12(S0)
+9D0039A4  AE030010   SW V1, 16(S0)
+9D0039A8  94430014   LHU V1, 20(V0)
+9D0039AC  A6030014   SH V1, 20(S0)
+9D0039B0  90420016   LBU V0, 22(V0)
+9D0039B4  A2020016   SB V0, 22(S0)
+9D0039B8  0F40133C   JAL strlen
+9D0039BC  02002025   OR A0, S0, ZERO
+9D0039C0  00402825   OR A1, V0, ZERO
+9D0039C4  0F40135D   JAL CACHE_DataCacheClean
+9D0039C8  02002025   OR A0, S0, ZERO
+9D0039CC  A3808010   SB ZERO, -32752(GP)
+9D0039D0  0F40133C   JAL strlen
+9D0039D4  02002025   OR A0, S0, ZERO
+9D0039D8  24030001   ADDIU V1, ZERO, 1
+9D0039DC  AFA30014   SW V1, 20(SP)
+9D0039E0  AFA30010   SW V1, 16(SP)
+9D0039E4  02203825   OR A3, S1, ZERO
+9D0039E8  00403025   OR A2, V0, ZERO
+9D0039EC  02002825   OR A1, S0, ZERO
+9D0039F0  0F400CD0   JAL DMAC_ChannelTransfer
+9D0039F4  24040002   ADDIU A0, ZERO, 2
+9D0039F8  2405FFFF   ADDIU A1, ZERO, -1
+9D0039FC  0F400777   JAL xQueueSemaphoreTake
+9D003A00  8F84803C   LW A0, -32708(GP)
+9D003A04  00003825   OR A3, ZERO, ZERO
+9D003A08  00003025   OR A2, ZERO, ZERO
+9D003A0C  00002825   OR A1, ZERO, ZERO
+9D003A10  0F4008FB   JAL xQueueGenericSend
+9D003A14  8F848040   LW A0, -32704(GP)
+9D003A18  0F401230   JAL vTaskDelay
+9D003A1C  240403E8   ADDIU A0, ZERO, 1000
+9D003A20  1000FFD4   BEQ ZERO, ZERO, prvTaskLowFunction
+9D003A24  2405FFFF   ADDIU A1, ZERO, -1
+9D003A28  27BDFFD0   ADDIU SP, SP, -48
+9D003A2C  AFBF002C   SW RA, 44(SP)
+9D003A30  AFB40028   SW S4, 40(SP)
+9D003A34  AFB30024   SW S3, 36(SP)
+9D003A38  AFB20020   SW S2, 32(SP)
+9D003A3C  AFB1001C   SW S1, 28(SP)
+9D003A40  AFB00018   SW S0, 24(SP)
+9D003A44  3C138000   LUI S3, -32768
+9D003A48  3C129D00   LUI S2, -25344
+9D003A4C  8E544FD8   LW S4, 20440(S2)
+9D003A50  3C11BF82   LUI S1, -16510
+9D003A54  26312A20   ADDIU S1, S1, 10784
+9D003A58  2405FFFF   ADDIU A1, ZERO, -1
+9D003A5C  0F400777   JAL xQueueSemaphoreTake
+9D003A60  8F848040   LW A0, -32704(GP)
+9D003A64  26424FD8   ADDIU V0, S2, 20440
+9D003A68  8C460004   LW A2, 4(V0)
+9D003A6C  8C450008   LW A1, 8(V0)
+9D003A70  8C44000C   LW A0, 12(V0)
+9D003A74  8C430010   LW V1, 16(V0)
+9D003A78  8C420014   LW V0, 20(V0)
+9D003A7C  AE747FE0   SW S4, 32736(S3)
+9D003A80  26707FE0   ADDIU S0, S3, 32736
+9D003A84  AE060004   SW A2, 4(S0)
+9D003A88  AE050008   SW A1, 8(S0)
+9D003A8C  AE04000C   SW A0, 12(S0)
+9D003A90  AE030010   SW V1, 16(S0)
+9D003A94  AE020014   SW V0, 20(S0)
+9D003A98  0F40133C   JAL strlen
+9D003A9C  02002025   OR A0, S0, ZERO
+9D003AA0  00402825   OR A1, V0, ZERO
+9D003AA4  0F40135D   JAL CACHE_DataCacheClean
+9D003AA8  02002025   OR A0, S0, ZERO
+9D003AAC  0F40133C   JAL strlen
+9D003AB0  02002025   OR A0, S0, ZERO
+9D003AB4  24030001   ADDIU V1, ZERO, 1
+9D003AB8  AFA30014   SW V1, 20(SP)
+9D003ABC  AFA30010   SW V1, 16(SP)
+9D003AC0  02203825   OR A3, S1, ZERO
+9D003AC4  00403025   OR A2, V0, ZERO
+9D003AC8  02002825   OR A1, S0, ZERO
+9D003ACC  0F400CD0   JAL DMAC_ChannelTransfer
+9D003AD0  24040002   ADDIU A0, ZERO, 2
+9D003AD4  2405FFFF   ADDIU A1, ZERO, -1
+9D003AD8  0F400777   JAL xQueueSemaphoreTake
+9D003ADC  8F84803C   LW A0, -32708(GP)
+9D003AE0  00003825   OR A3, ZERO, ZERO
+9D003AE4  00003025   OR A2, ZERO, ZERO
+9D003AE8  00002825   OR A1, ZERO, ZERO
+9D003AEC  0F4008FB   JAL xQueueGenericSend
+9D003AF0  8F848040   LW A0, -32704(GP)
+9D003AF4  0F401230   JAL vTaskDelay
+9D004818  24020001   ADDIU V0, ZERO, 1
+9D00481C  14820011   BNE A0, V0, U6D2Handler
+9D004820  00000000   NOP
+9D004824  27BDFFE0   ADDIU SP, SP, -32
+9D004828  AFBF001C   SW RA, 28(SP)
+9D00482C  AFA00010   SW ZERO, 16(SP)
+9D004830  27A50010   ADDIU A1, SP, 16
+9D004834  0F400EF8   JAL xQueueGiveFromISR
+9D004838  8F84803C   LW A0, -32708(GP)
+9D00483C  8FA20010   LW V0, 16(SP)
+9D004840  10400006   BEQ V0, ZERO, U6D2Handler
+9D004844  8FBF001C   LW RA, 28(SP)
+9D004848  40026800   MFC0 V0, Cause
+9D00484C  34420100   ORI V0, V0, 256
+9D004850  40826800   MTC0 V0, Cause
+9D004854  000000C0   EHB
+9D004858  8FBF001C   LW RA, 28(SP)
+---  c:/users/tuiday/documents/lab-freertos/lab4_freertos_uart_dma_static/src/config/default/exceptions.c
+1:                   /*******************************************************************************
+2:                     MPLAB Harmony Exceptions Source File
+3:                   
+4:                     File Name:
+5:                       exceptions.c
+6:                   
+7:                     Summary:
+8:                       This file contains a function which overrides the default _weak_ exception
+9:                       handler provided by the XC32 compiler.
+10:                  
+11:                    Description:
+12:                      This file redefines the default _weak_  exception handler with a more debug
+13:                      friendly one. If an unexpected exception occurs the code will stop in a
+14:                      while(1) loop.  The debugger can be halted and two variables exception_code
+15:                      and exception_address can be examined to determine the cause and address
+16:                      where the exception occurred.
+17:                   *******************************************************************************/
+18:                  
+19:                  // DOM-IGNORE-BEGIN
+20:                  /*******************************************************************************
+21:                  * Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
+22:                  *
+23:                  * Subject to your compliance with these terms, you may use Microchip software
+24:                  * and any derivatives exclusively with Microchip products. It is your
+25:                  * responsibility to comply with third party license terms applicable to your
+26:                  * use of third party software (including open source software) that may
+27:                  * accompany Microchip software.
+28:                  *
+29:                  * THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+30:                  * EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+31:                  * WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+32:                  * PARTICULAR PURPOSE.
+33:                  *
+34:                  * IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
+35:                  * INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
+36:                  * WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS
+37:                  * BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
+38:                  * FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
+39:                  * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
+40:                  * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+41:                  *******************************************************************************/
+42:                  // DOM-IGNORE-END
+43:                  // *****************************************************************************
+44:                  // *****************************************************************************
+45:                  // Section: Included Files
+46:                  // *****************************************************************************
+47:                  // *****************************************************************************
+48:                  #include "device.h"
+49:                  #include "definitions.h"
+50:                  #include <stdio.h>
+51:                  
+52:                  // *****************************************************************************
+53:                  // *****************************************************************************
+54:                  // Section: Forward declaration of the handler functions
+55:                  // *****************************************************************************
+56:                  // *****************************************************************************
+57:                  /* MISRAC 2012 deviation block start */
+58:                  /* MISRA C-2012 Rule 21.2 deviated 8 times. Deviation record ID -  H3_MISRAC_2012_R_21_2_DR_4 */
+59:                  void _general_exception_handler(void);
+60:                  void _bootstrap_exception_handler(void);
+61:                  void _cache_err_exception_handler (void);
+62:                  void _simple_tlb_refill_exception_handler(void);
+63:                  
+64:                  // *****************************************************************************
+65:                  // *****************************************************************************
+66:                  // Section: Global Data Definitions
+67:                  // *****************************************************************************
+68:                  // *****************************************************************************
+69:                  
+70:                  /*******************************************************************************
+71:                    Exception Reason Data
+72:                  
+73:                    <editor-fold defaultstate="expanded" desc="Exception Reason Data">
+74:                  
+75:                    Remarks:
+76:                      These global static items are used instead of local variables in the
+77:                      _general_exception_handler function because the stack may not be available
+78:                      if an exception has occured.
+79:                  */
+80:                  
+81:                  /* Exception codes */
+82:                  #define EXCEP_IRQ       0U // interrupt
+83:                  #define EXCEP_AdEL      4U // address error exception (load or ifetch)
+84:                  #define EXCEP_AdES      5U // address error exception (store)
+85:                  #define EXCEP_IBE       6U // bus error (ifetch)
+86:                  #define EXCEP_DBE       7U // bus error (load/store)
+87:                  #define EXCEP_Sys       8U // syscall
+88:                  #define EXCEP_Bp        9U // breakpoint
+89:                  #define EXCEP_RI        10U // reserved instruction
+90:                  #define EXCEP_CpU       11U // coprocessor unusable
+91:                  #define EXCEP_Overflow  12U // arithmetic overflow
+92:                  #define EXCEP_Trap      13U // trap (possible divide by zero)
+93:                  #define EXCEP_IS1       16U // implementation specfic 1
+94:                  #define EXCEP_CEU       17U // CorExtend Unuseable
+95:                  #define EXCEP_C2E       18U // coprocessor 2
+96:                  
+97:                  /* Address of instruction that caused the exception. */
+98:                  static unsigned int exception_address;
+99:                  
+100:                 /* Code identifying the cause of the exception (CP0 Cause register). */
+101:                 static uint32_t  exception_code;
+102:                 
+103:                 
+104:                 // </editor-fold>
+105:                 
+106:                 /*******************************************************************************
+107:                   Function:
+108:                     void _general_exception_handler ( void )
+109:                 
+110:                   Description:
+111:                     A general exception is any non-interrupt exception which occurs during program
+112:                     execution outside of bootstrap code.
+113:                 
+114:                   Remarks:
+115:                     Refer to the XC32 User's Guide for additional information.
+116:                  */
+117:                 
+118:                 void __attribute__((noreturn, weak)) _general_exception_handler ( void )
+119:                 {
+120:                     /* Mask off the ExcCode Field from the Cause Register
+121:                     Refer to the MIPs Software User's manual */
+122:                     exception_code = ((_CP0_GET_CAUSE() & 0x0000007CU) >> 2U);
+123:                     exception_address = _CP0_GET_EPC();
+124:                 
+125:                     while (true)
+126:                     {
+127:                         #if defined(__DEBUG) || defined(__DEBUG_D) && defined(__XC32)
+128:                             __builtin_software_breakpoint();
+129:                         #endif
+130:                     }
+131:                 }
+132:                 /*******************************************************************************
+133:                   Function:
+134:                     void _bootstrap_exception_handler ( void )
+135:                 
+136:                   Description:
+137:                     A bootstrap exception is any exception which occurs while bootstrap code is
+138:                     running (STATUS.BEV bit is 1).
+139:                 
+140:                   Remarks:
+141:                     Refer to the XC32 User's Guide for additional information.
+142:                  */
+143:                 
+144:                 void __attribute__((noreturn, weak)) _bootstrap_exception_handler(void)
+145:                 {
+146:                     /* Mask off the ExcCode Field from the Cause Register
+147:                     Refer to the MIPs Software User's manual */
+148:                     exception_code = (_CP0_GET_CAUSE() & 0x0000007CU) >> 2U;
+149:                     exception_address = _CP0_GET_EPC();
+150:                 
+151:                     while (true)
+152:                     {
+153:                         #if defined(__DEBUG) || defined(__DEBUG_D) && defined(__XC32)
+154:                             __builtin_software_breakpoint();
+155:                         #endif
+156:                     }
+157:                 }
+158:                 /*******************************************************************************
+159:                   Function:
+160:                     void _cache_err_exception_handler ( void )
+161:                 
+162:                   Description:
+163:                     A cache-error exception occurs when an instruction or data reference detects
+164:                     a cache tag or data error. This exception is not maskable. To avoid
+165:                     disturbing the error in the cache array the exception vector is to an
+166:                     unmapped, uncached address. This exception is precise.
+167:                 
+168:                   Remarks:
+169:                     Refer to the XC32 User's Guide for additional information.
+170:                  */
+171:                 
+172:                 void __attribute__((noreturn, weak)) _cache_err_exception_handler(void)
+173:                 {
+174:                     /* Mask off the ExcCode Field from the Cause Register
+175:                     Refer to the MIPs Software User's manual */
+176:                     exception_code = (_CP0_GET_CAUSE() & 0x0000007CU) >> 2U;
+177:                     exception_address = _CP0_GET_EPC();
+178:                 
+179:                     while (true)
+180:                     {
+181:                         #if defined(__DEBUG) || defined(__DEBUG_D) && defined(__XC32)
+182:                             __builtin_software_breakpoint();
+183:                         #endif
+184:                     }
+185:                 }
+186:                 
+187:                 /*******************************************************************************
+188:                   Function:
+189:                     void _simple_tlb_refill_exception_handler ( void )
+190:                 
+191:                   Description:
+192:                     During an instruction fetch or data access, a TLB refill exception occurs
+193:                     when no TLB entry matches a reference to a mapped address space and the EXL
+194:                     bit is 0 in the Status register. Note that this is distinct from the case
+195:                     in which an entry matches, but has the valid bit off. In that case, a TLB
+196:                     Invalid exception occurs.
+197:                 
+198:                   Remarks:
+199:                     Refer to the XC32 User's Guide for additional information.
+200:                  */
+201:                 
+202:                 void __attribute__((noreturn, weak)) _simple_tlb_refill_exception_handler(void)
+203:                 {
+204:                     /* Mask off the ExcCode Field from the Cause Register
+205:                     Refer to the MIPs Software User's manual */
+206:                     exception_code = (_CP0_GET_CAUSE() & 0x0000007CU) >> 2U;
+207:                     exception_address = _CP0_GET_EPC();
+208:                 
+209:                     while (true)
+210:                     {
+211:                         #if defined(__DEBUG) || defined(__DEBUG_D) && defined(__XC32)
+212:                             __builtin_software_breakpoint();
+213:                         #endif
+214:                     }
+215:                 }
+216:                 /*******************************************************************************
+217:                  End of File
+218:                 */
+-----*  Optimizer-Generated Procedural Abstractions  *----------------------------------------------
+9D004F18  27BDFFF8   ADDIU SP, SP, -8
+9D004F1C  AFBF0004   SW RA, 4(SP)
+9D004F20  40026800   MFC0 V0, Cause
+9D004F24  40027000   MFC0 V0, EPC
+9D004F28  7000003F   SDBBP 0
+9D004F2C  1000FFFE   BEQ ZERO, ZERO, _general_exception_handler
+9D004F30  00000000   NOP
+9D004F34  27BDFFF8   ADDIU SP, SP, -8
+9D004F38  AFBF0004   SW RA, 4(SP)
+9D004F3C  40026800   MFC0 V0, Cause
+9D004F40  40027000   MFC0 V0, EPC
+9D004F44  7000003F   SDBBP 0
+9D004F48  1000FFFE   BEQ ZERO, ZERO, _bootstrap_exception_handler
+9D004F4C  00000000   NOP
+9D004F50  27BDFFF8   ADDIU SP, SP, -8
+9D004F54  AFBF0004   SW RA, 4(SP)
+9D004F58  40026800   MFC0 V0, Cause
+9D004F5C  40027000   MFC0 V0, EPC
+9D004F60  7000003F   SDBBP 0
+9D004F64  1000FFFE   BEQ ZERO, ZERO, _cache_err_exception_handler
+9D004F68  00000000   NOP
+9D004F6C  27BDFFF8   ADDIU SP, SP, -8
+9D004F70  AFBF0004   SW RA, 4(SP)
+9D004F74  40026800   MFC0 V0, Cause
+9D004F78  40027000   MFC0 V0, EPC
+9D004F7C  7000003F   SDBBP 0
+9D004F80  1000FFFE   BEQ ZERO, ZERO, _simple_tlb_refill_exception_handler
+9D004F84  00000000   NOP
+---  C:/Users/tuiday/.mchp_packs/Microchip/PIC32MZ-EF_DFP/1.5.173/xc32/startup/crt0.S  ------------------
+                                                  1:     /*********************************************************************
+                                                  2:      *
+                                                  3:      *                  C Runtime Startup
+                                                  4:      *
+                                                  5:      *********************************************************************
+                                                  6:      * Filename:        crt0.S
+                                                  7:      *
+                                                  8:      * Processor:       PIC32
+                                                  9:      *
+                                                  10:     * Compiler:        MPLAB XC32
+                                                  11:     *                  MPLAB X IDE
+                                                  12:     * Company:         Microchip Technology Inc.
+                                                  13:     *
+                                                  14:     * Software License Agreement
+                                                  15:     *
+                                                  16:     * Copyright (c) 2014, Microchip Technology Inc. and its subsidiaries ("Microchip")
+                                                  17:     * All rights reserved.
+                                                  18:     *
+                                                  19:     * This software is developed by Microchip Technology Inc. and its
+                                                  20:     * subsidiaries ("Microchip").
+                                                  21:     *
+                                                  22:     * Redistribution and use in source and binary forms, with or without
+                                                  23:     * modification, are permitted provided that the following conditions are met:
+                                                  24:     *
+                                                  25:     * 1.      Redistributions of source code must retain the above copyright
+                                                  26:     * notice, this list of conditions and the following disclaimer.
+                                                  27:     *
+                                                  28:     * 2.      Redistributions in binary form must reproduce the above copyright
+                                                  29:     * notice, this list of conditions and the following disclaimer in the
+                                                  30:     * documentation and/or other materials provided with the distribution.
+                                                  31:     * Publication is not required when this file is used in an embedded 
+                                                  32:     * application.
+                                                  33:     *
+                                                  34:     * 3.      Microchip's name may not be used to endorse or promote products
+                                                  35:     * derived from this software without specific prior written permission.
+                                                  36:     *
+                                                  37:     * THIS SOFTWARE IS PROVIDED BY MICROCHIP "AS IS" AND ANY EXPRESS OR IMPLIED
+                                                  38:     * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+                                                  39:     * MERCHANTABILITY AND FITNESS FOR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL
+                                                  40:     * MICROCHIP BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+                                                  41:     * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING BUT NOT LIMITED TO
+                                                  42:     * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA OR PROFITS;
+                                                  43:     * OR BUSINESS INTERRUPTION) HOWSOEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+                                                  44:     * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+                                                  45:     * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+                                                  46:     * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+                                                  47:     *
+                                                  48:     ********************************************************************/
+                                                  49:    
+                                                  50:    #include "xc.h"
+                                                  51:    #include <cp0defs.h>
+                                                  52:    
+                                                  53:    #ifdef __LIBBUILD__
+                                                  54:       # Replace the standard debugging information with a simple filename. This
+                                                  55:       # prevents the library build directory from showing up in MPLAB IDE. It
+                                                  56:       # also effectively disables source-line debugging.
+                                                  57:       .file 1 "libpic32/startup/crt0.S"
+                                                  58:       .loc 1 0
+                                                  59:    #endif
+                                                  60:    
+                                                  61:    #if (__XC32_VERSION > 1000) && !defined(CPP_INIT)
+                                                  62:    #define CPP_INIT
+                                                  63:    #endif
+                                                  64:    
+                                                  65:    #if !defined(PIC32_SRS_SET_COUNT)
+                                                  66:    #  if defined(__PIC32_SRS_SET_COUNT)
+                                                  67:    #    define PIC32_SRS_SET_COUNT __PIC32_SRS_SET_COUNT
+                                                  68:    #  else
+                                                  69:    #    warning PIC32_SRS_SET_COUNT not defined on build line
+                                                  70:    #    define PIC32_SRS_SET_COUNT 2
+                                                  71:    #  endif
+                                                  72:    #endif
+                                                  73:    
+                                                  74:    #if defined(__PIC32MX) || defined(__PIC32MM) || defined(__PIC32MZ)
+                                                  75:    #define INIT_DATA 1
+                                                  76:    #endif
+                                                  77:    
+                                                  78:    /* This file contains 32-bit assembly code */
+                                                  79:           .set nomips16
+                                                  80:    
+                                                  81:            ##################################################################
+                                                  82:            # Entry point of the entire application
+                                                  83:            ##################################################################
+                                                  84:            .section .reset,code,keep
+                                                  85:            .align 2
+                                                  86:            .set noreorder
+                                                  87:            .ent _reset
+                                                  88:    
+                                                  89:    ############################
+                                                  90:    # Begin ISA switching code #
+                                                  91:    ############################
+                                                  92:    
+                                                  93:    #if defined (__mips_micromips)
+                                                  94:            .set micromips
+                                                  95:    #endif
+                                                  96:    
+                                                  97:    #if (defined(__PIC32_HAS_MICROMIPS)) && (defined(__PIC32_HAS_MIPS32R2))
+                                                  98:    _reset:
+                                                  99:            .word 0x10000003     /* MIPS32:    branch forward 0x10 bytes from here  */
+                                                  100:                                /* MicroMIPS: ADDI32 $0, $0, 0x0007 (nop)          */
+                                                  101:                                /* DO NOT change the relative branch               */
+                                                  102:   
+                                                  103:           .word 0x00000000     /* NOP */
+                                                  104:   __reset_micromips_isa:
+                                                  105:           .set    micromips
+BFC00008  0006F3F0   TGE ZERO, A2                 106:           jal     _startup
+BFC0000C  00000000   NOP                          107:           nop
+                                                  108:   
+                                                  109:           .align 2
+                                                  110:           /* Device not in proper ISA mode */
+                                                  111:           .set nomicromips
+                                                  112:   __reset_switch_isa:
+BFC00010  0FF00006   JAL 0xBFC00018               113:           jal _startup
+BFC00014  00000000   NOP                          114:           nop
+                                                  115:   
+                                                  116:   #else
+                                                  117:   
+                                                  118:   _reset:
+                                                  119:           jal _startup
+                                                  120:           nop
+                                                  121:   
+                                                  122:   #endif  /* __PIC32_HAS_MICROMIPS */
+                                                  123:   
+                                                  124:           .align 2
+                                                  125:           .end _reset
+                                                  126:           .globl _reset
+                                                  127:           .size _reset, .-_reset
+                                                  128:   
+                                                  129:           .section .reset.startup,code,keep
+                                                  130:           .align 2
+                                                  131:           .set noreorder
+                                                  132:   
+                                                  133:   #if defined (__mips_micromips)
+                                                  134:           .set micromips
+                                                  135:   #else
+                                                  136:           .set nomicromips
+                                                  137:   #endif
+                                                  138:   
+                                                  139:   ############################
+                                                  140:   # End ISA switching code   #
+                                                  141:   ############################
+                                                  142:   
+                                                  143:           ##################################################################
+                                                  144:           # Startup code
+                                                  145:           ##################################################################
+                                                  146:           .align 2
+                                                  147:           .globl _startup
+                                                  148:           .set noreorder
+                                                  149:           .ent _startup
+                                                  150:   _startup:
+                                                  151:           ##################################################################
+                                                  152:           # If entered because of an NMI, jump to the NMI handler.
+                                                  153:           ##################################################################
+BFC00018  401A6000   MFC0 K0, Status              154:           mfc0    k0,_CP0_STATUS
+BFC0001C  7F5A04C0   EXT K0, K0, 19, 1            155:           ext     k0,k0,19,1              # Extract NMI bit
+BFC00020  13400005   BEQ K0, ZERO, 0xBFC00038     156:           beqz    k0,_no_nmi
+BFC00024  00000000   NOP                          157:           nop
+BFC00028  3C1A9D00   LUI K0, -25344               158:           la      k0,_nmi_handler
+BFC00030  03400008   JR K0                        159:           jr      k0
+BFC00034  00000000   NOP                          160:           nop
+                                                  161:   _no_nmi:
+                                                  162:   
+                                                  163:           ##################################################################
+                                                  164:           # Initialize Stack Pointer
+                                                  165:           #   _stack is initialized by the linker script to point to the
+                                                  166:           #    starting location of the stack in DRM
+                                                  167:           ##################################################################
+BFC00038  3C1D8008   LUI SP, -32760               168:           la      sp,_stack
+                                                  169:   
+                                                  170:           ##################################################################
+                                                  171:           # Initialize Global Pointer
+                                                  172:           #   _gp is initialized by the linker script to point to "middle"
+                                                  173:           #   of the small variables region
+                                                  174:           ##################################################################
+BFC00040  3C1C8001   LUI GP, -32767               175:           la      gp,_gp
+                                                  176:   
+                                                  177:   #if (PIC32_SRS_SET_COUNT == 2)
+                                                  178:           ##################################################################
+                                                  179:           # Initialize Global Pointer in Shadow Set
+                                                  180:           #   The SRSCtl's PSS field must be set to the shadow set in which
+                                                  181:           #   to initialize the global pointer.  Since we have only a
+                                                  182:           #   single shadow set (besides the normal), we will initialize
+                                                  183:           #   SRSCtl<PSS> to SRSCtl<HSS>.  We then write the global pointer
+                                                  184:           #   to the previous shadow set to ensure that on interrupt, the
+                                                  185:           #   global pointer has been initialized.
+                                                  186:           ##################################################################
+                                                  187:           mfc0    t1,_CP0_SRSCTL          # Read SRSCtl register
+                                                  188:           add     t3,t1,zero              # Save off current SRSCtl
+                                                  189:           ext     t2,t1,26,4              # to obtain HSS field
+                                                  190:           ins     t1,t2,6,4               # Put HSS field
+                                                  191:           mtc0    t1,_CP0_SRSCTL          # into SRSCtl<PSS>
+                                                  192:           ehb                             # Clear hazard before using new SRSCTL
+                                                  193:           wrpgpr  gp,gp                   # Set global pointer in PSS
+                                                  194:           mtc0    t3,_CP0_SRSCTL          # Restore SRSCtl
+                                                  195:           ehb
+                                                  196:   
+                                                  197:   #elif (PIC32_SRS_SET_COUNT > 2)
+                                                  198:           ##################################################################
+                                                  199:           # Initialize Global Pointer in Shadow Set(s)
+                                                  200:           #   The SRSCtl PSS field must be set to the shadow set in which
+                                                  201:           #   to initialize the global pointer.  We will initialize
+                                                  202:           #   SRSCtl<PSS> to the number of reg sets and work down to set zero.
+                                                  203:           #   We write the global pointer to the previous shadow set to
+                                                  204:           #   ensure that on interrupt, the global pointer has been
+                                                  205:           #   initialized.
+                                                  206:           ##################################################################
+BFC00048  40096002   MFC0 T1, SRSCtl              207:           mfc0    t1,_CP0_SRSCTL          # Read SRSCtl register
+BFC0004C  01205820   ADD T3, T1, ZERO             208:           add     t3,t1,zero              # Save off current SRSCtl
+                                                  209:   
+BFC00050  240A0007   ADDIU T2, ZERO, 7            210:           li      t2,(PIC32_SRS_SET_COUNT-1)
+                                                  211:   
+BFC00054  7D494984   INS T1, T2, 6, 4             212:   1:      ins     t1,t2,6,4               # Put next shadow set field
+BFC00058  40896002   MTC0 T1, SRSCtl              213:           mtc0    t1,_CP0_SRSCTL          # into SRSCtl<PSS>
+BFC0005C  000000C0   EHB                          214:           ehb                             # Clear hazard before using new SRSCTL
+BFC00060  41DCE000   WRPGPR GP, GP                215:           wrpgpr  gp,gp                   # Set global pointer in PSS
+                                                  216:   
+BFC00064  254AFFFF   ADDIU T2, T2, -1             217:           addiu   t2,t2,-1                # Next lower shadow set
+                                                  218:                                           # Loop for all sets
+BFC00068  1540FFFA   BNE T2, ZERO, 0xBFC00054     219:           bne     t2,$0,1b                # Down to zero (normal GPR set)
+BFC0006C  00000000   NOP                          220:           nop
+                                                  221:   
+BFC00070  408B6002   MTC0 T3, SRSCtl              222:           mtc0    t3,_CP0_SRSCTL          # Restore SRSCtl
+BFC00074  000000C0   EHB                          223:           ehb
+                                                  224:   
+                                                  225:   #endif /* (PIC32_SRS_SET_COUNT > 2) */
+                                                  226:   
+                                                  227:           ##################################################################
+                                                  228:           # Call the "on reset" procedure
+                                                  229:           ##################################################################
+BFC00078  3C089D00   LUI T0, -25344               230:           la      t0,_on_reset
+BFC00080  0100F809   JALR T0                      231:           jalr    t0
+BFC00084  00000000   NOP                          232:           nop
+                                                  233:   
+                                                  234:   #if defined(INIT_MMU_MZ_FIXED) || defined(__PIC32_HAS_MMU_MZ_FIXED)
+                                                  235:           ##################################################################
+                                                  236:           # Initialize TLB for fixed mapping to EBI and SQI
+                                                  237:           ##################################################################
+                                                  238:           .extern __pic32_tlb_init_ebi_sqi
+BFC00088  3C089D00   LUI T0, -25344               239:           la      t0,__pic32_tlb_init_ebi_sqi
+BFC00090  0100F809   JALR T0                      240:           jalr    t0
+BFC00094  00000000   NOP                          241:           nop
+                                                  242:   #endif
+                                                  243:   
+                                                  244:     /* This part of clearing bss was added to handle COMMON sections, 
+                                                  245:        which weren't caught by dinit. Starting with XC32 v4.30, 
+                                                  246:        COMMON sections are also handled by dinit, so this part becomes redundant.
+                                                  247:        __XC32_VERSION is broken (set to 243739000) in v3.01 */
+                                                  248:   #if ((__XC32_VERSION == 243739000) || (__XC32_VERSION < 4300))
+                                                  249:           ##################################################################
+                                                  250:           # Clear uninitialized data sections
+                                                  251:           ##################################################################
+                                                  252:   _start_bss_init:
+                                                  253:           la      t0,_bss_begin
+                                                  254:           la      t1,_bss_end
+                                                  255:           b       _bss_check
+                                                  256:           nop
+                                                  257:   
+                                                  258:   _bss_init:
+                                                  259:           sw      zero,0x0(t0)
+                                                  260:           addu    t0,4
+                                                  261:   _bss_check:
+                                                  262:           bltu    t0,t1,_bss_init
+                                                  263:           nop
+                                                  264:   #endif
+                                                  265:   
+                                                  266:   #if defined(INIT_L1_CACHE) || defined(__PIC32_HAS_L1CACHE)
+                                                  267:           ##################################################################
+                                                  268:           # Initialize L1 cache. This must be done after bss clearing
+                                                  269:           # since the _bss_end symbol may not be cache-line aligned.
+                                                  270:           ##################################################################
+                                                  271:           .extern   __pic32_init_cache
+BFC00098  3C08BFC0   LUI T0, -16448               272:           la      t0,__pic32_init_cache
+BFC000A0  0100F809   JALR T0                      273:           jalr    t0
+BFC000A4  00000000   NOP                          274:           nop
+                                                  275:   #endif
+                                                  276:   
+                                                  277:   #if defined(INIT_DATA) || defined(__PIC32_HAS_INIT_DATA)
+                                                  278:   
+                                                  279:   #if defined(__LIBBUILD__) /* Prebuilt crt0.o file */
+                                                  280:   
+                                                  281:           ##################################################################
+                                                  282:           # Initialize data using the linker-generated .dinit table
+                                                  283:           # For use with XC32 versions prior to XC32 v2.10 only.
+                                                  284:           ##################################################################
+                                                  285:           .equiv FMT_CLEAR,0
+                                                  286:           .equiv FMT_COPY,1
+                                                  287:   _dinit_init:
+                                                  288:           la      t0,_dinit_addr
+                                                  289:   
+                                                  290:   #define SRC t0
+                                                  291:   #define DST t1
+                                                  292:   #define LEN t2
+                                                  293:   #define FMT t3
+                                                  294:   
+                                                  295:   0:      lw      DST,0(SRC)
+                                                  296:           beqz    DST,9f
+                                                  297:           addu    SRC,4
+                                                  298:           lw      LEN,0(SRC)
+                                                  299:           addu    SRC,4
+                                                  300:           lw      FMT,0(SRC)
+                                                  301:           beq     FMT,$0,_dinit_clear
+                                                  302:           addu    SRC,4
+                                                  303:   
+                                                  304:   _dinit_copy:
+                                                  305:           lbu     t4,0(SRC)
+                                                  306:           subu    LEN,1
+                                                  307:           addu    SRC,1
+                                                  308:           sb      t4,0(DST)
+                                                  309:           bne     LEN,$0,_dinit_copy
+                                                  310:           addu    DST,1
+                                                  311:   
+                                                  312:           b       _dinit_end
+                                                  313:           nop
+                                                  314:   
+                                                  315:   _dinit_clear:
+                                                  316:           sb      $0,(DST)
+                                                  317:           subu    LEN,1
+                                                  318:           bne     LEN,$0,_dinit_clear
+                                                  319:           addu    DST,1
+                                                  320:   
+                                                  321:   _dinit_end:
+                                                  322:           addu    SRC,3
+                                                  323:           addiu   LEN,$0,-4
+                                                  324:           and     SRC,LEN,SRC
+                                                  325:           lw      DST,0(SRC)
+                                                  326:           bne     DST,$0,0b
+                                                  327:           nop
+                                                  328:   9:
+                                                  329:   
+                                                  330:   #else
+                                                  331:           #####################################################################
+                                                  332:           # Initialize data using the linker-generated .dinit table
+                                                  333:           # XC32 v2.10 and later provide the data-init code in a separate file
+                                                  334:           # packaged with the compiler rather than the DFP. Use that init
+                                                  335:           # code instead.
+                                                  336:           #####################################################################
+                                                  337:           .extern   __pic32_data_init
+BFC000A8  3C089D00   LUI T0, -25344               338:           la      t0, __pic32_data_init
+BFC000B0  0100F809   JALR T0                      339:           jalr    t0
+BFC000B4  00000000   NOP                          340:           nop
+                                                  341:   
+                                                  342:   #if defined(_OFF168_VOFF_POSITION)
+BFC000B8  3C09BF81   LUI T1, -16511               343:           lui	t1,%hi(OFF168)
+BFC000BC  3C0A0000   LUI T2, 0                    344:           lui	t2,%hi(__vector_offset_168)
+BFC000C0  254A0F54   ADDIU T2, T2, 3924           345:           addiu	t2,t2,%lo(__vector_offset_168)
+BFC000C4  AD2A07E0   SW T2, 2016(T1)              346:           sw	t2,%lo(OFF168)(t1)
+                                                  347:   #endif
+                                                  348:   
+                                                  349:   #endif /* __LIBBUILD__ */
+                                                  350:   
+                                                  351:   #endif /* INIT_DATA */
+                                                  352:   
+                                                  353:           ##################################################################
+                                                  354:           # If there are no RAM functions, skip the next section --
+                                                  355:           # initializing bus matrix registers.
+                                                  356:           ##################################################################
+BFC000C8  3C090000   LUI T1, 0                    357:           la      t1,_ramfunc_begin
+BFC000D0  11200001   BEQ T1, ZERO, 0xBFC000D8     358:           beqz    t1,_ramfunc_done
+BFC000D4  00000000   NOP                          359:           nop
+                                                  360:   
+                                                  361:   #if defined(INIT_SSX) || defined(__PIC32_HAS_SSX)
+                                                  362:     /* No initialization required */
+                                                  363:   #else /* Use BMX */
+                                                  364:           ##################################################################
+                                                  365:           # Initialize bus matrix registers if RAM functions exist in the
+                                                  366:           # application
+                                                  367:           ##################################################################
+                                                  368:           la      t1,_bmxdkpba_address
+                                                  369:           la      t2,BMXDKPBA
+                                                  370:           sw      t1,0(t2)
+                                                  371:           la      t1,_bmxdudba_address
+                                                  372:           la      t2,BMXDUDBA
+                                                  373:           sw      t1,0(t2)
+                                                  374:           la      t1,_bmxdupba_address
+                                                  375:           la      t2,BMXDUPBA
+                                                  376:           sw      t1,0(t2)
+                                                  377:   #endif /* INIT_SSX */
+                                                  378:   
+                                                  379:   _ramfunc_done:
+                                                  380:   
+                                                  381:           ##################################################################
+                                                  382:           # Initialize CP0 registers
+                                                  383:           ##################################################################
+                                                  384:           # Initialize Count register
+                                                  385:           ##################################################################
+BFC000D8  40804800   MTC0 ZERO, Count             386:           mtc0    zero,_CP0_COUNT
+                                                  387:   
+                                                  388:           ##################################################################
+                                                  389:           # Initialize Compare register
+                                                  390:           ##################################################################
+BFC000DC  240AFFFF   ADDIU T2, ZERO, -1           391:           li      t2,-1
+BFC000E0  408A5800   MTC0 T2, Compare             392:           mtc0    t2,_CP0_COMPARE
+                                                  393:   
+                                                  394:           ##################################################################
+                                                  395:           # Ensure BEV set and Initialize EBase register
+                                                  396:           ##################################################################
+BFC000E4  3C080040   LUI T0, 64                   397:           li      t0, (1<<22)
+BFC000E8  400A6000   MFC0 T2, Status              398:           mfc0    t2,_CP0_STATUS
+BFC000EC  010A5025   OR T2, T0, T2                399:           or      t2,t0,t2               # Set BEV bit 22
+BFC000F0  408A6000   MTC0 T2, Status              400:           mtc0    t2,_CP0_STATUS
+                                                  401:   
+BFC000F4  3C099D00   LUI T1, -25344               402:           la      t1,_ebase_address
+BFC000FC  000000C0   EHB                          403:           ehb
+BFC00100  40897801   MTC0 T1, EBase               404:           mtc0    t1,_CP0_EBASE
+                                                  405:           
+                                                  406:           ##################################################################
+                                                  407:           # Initialize PRISS register to a safer default for devices that 
+                                                  408:           # have it. The application should re-initialize it to an
+                                                  409:           # application-specific value.
+                                                  410:           #
+                                                  411:           # We do NOT do this by default.
+                                                  412:           ##################################################################
+                                                  413:   #if defined(USE_DEFAULT_PRISS_VALUE) 
+                                                  414:   #if defined(_PRISS_PRI7SS_POSITION)
+                                                  415:   #if (PIC32_SRS_SET_COUNT >= 7)
+                                                  416:           li	    t2, 0x76540000
+                                                  417:           addiu	t2, t2, 0x3210
+                                                  418:           lui	    t1, %hi(PRISS)
+                                                  419:           sw	    t2, %lo(PRISS)(t1)
+                                                  420:   #elif (PIC32_SRS_SET_COUNT <= 2)
+                                                  421:           li	    t2, 0x10000000
+                                                  422:           lui	    t1, %hi(PRISS)
+                                                  423:           sw	    t2, %lo(PRISS)(t1)
+                                                  424:   #endif /* PIC32_SRS_SET_COUNT */
+                                                  425:   #endif /* _PRISS_PRI7SS_POSITION */
+                                                  426:   #endif /* USE_DEFAULT_PRISS_VALUE */
+                                                  427:           
+                                                  428:           ##################################################################
+                                                  429:           # Initialize IntCtl/INTCON.VS register with _vector_spacing
+                                                  430:           ##################################################################
+BFC00104  3C090000   LUI T1, 0                    431:           la      t1,_vector_spacing
+                                                  432:   #if defined(INIT_INTCONVS) || defined(__PIC32_HAS_INTCONVS)
+                                                  433:           la      t0, INTCON
+                                                  434:           lw      t2, 0(t0)
+                                                  435:           li      t2, 0
+                                                  436:           ins     t2, t1, 16, 7
+                                                  437:   #if defined(__PIC32MM) && defined(_INTCON_MVEC_MASK)
+                                                  438:           ori     t2, t2, _INTCON_MVEC_MASK
+                                                  439:   #endif
+                                                  440:           sw      t2, 0(t0)
+                                                  441:   #endif
+BFC0010C  240A0000   ADDIU T2, ZERO, 0            442:           li      t2,0                    # Clear t2 and
+BFC00110  7D2A4944   INS T2, T1, 5, 5             443:           ins     t2,t1,5,5               # shift value to VS field
+BFC00114  408A6001   MTC0 T2, IntCtl              444:           mtc0    t2,_CP0_INTCTL
+                                                  445:   
+                                                  446:           ##################################################################
+                                                  447:           # Initialize CAUSE registers
+                                                  448:           # - Enable counting of Count register <DC = 0>
+                                                  449:           # - Use special exception vector <IV = 1>
+                                                  450:           # - Clear pending software interrupts <IP1:IP0 = 0>
+                                                  451:           ##################################################################
+BFC00118  3C090080   LUI T1, 128                  452:           li      t1,0x00800000
+BFC0011C  40896800   MTC0 T1, Cause               453:           mtc0    t1,_CP0_CAUSE
+                                                  454:   
+                                                  455:           ##################################################################
+                                                  456:           # Initialize STATUS register
+                                                  457:           # - Access to Coprocessor 0 not allowed in user mode <CU0 = 0>
+                                                  458:           # - User mode uses configured endianness <RE = 0>
+                                                  459:           # - Preserve Bootstrap Exception vectors <BEV>
+                                                  460:           # - Preserve soft reset <SR> and non-maskable interrupt <NMI>
+                                                  461:           # - CorExtend enabled based on whether CorExtend User Defined
+                                                  462:           #   Instructions have been implemented <CEE = Config<UDI>>
+                                                  463:           # - Disable any pending interrupts <IM7..IM2 = 0, IM1..IM0 = 0>
+                                                  464:           # - Disable hardware interrupts <IPL7:IPL2 = 0>
+                                                  465:           # - Base mode is Kernel mode <UM = 0>
+                                                  466:           # - Error level is normal <ERL = 0>
+                                                  467:           # - Exception level is normal <EXL = 0>
+                                                  468:           # - Interrupts are disabled <IE = 0>
+                                                  469:           # - DSPr2 ASE is enabled for devices that support it <MX = 1>
+                                                  470:           # - FPU64 is enabled for devices that support it <CU1=1> & <FR=1>
+                                                  471:           ##################################################################
+BFC00120  40088000   MFC0 T0, Config              472:           mfc0    t0,_CP0_CONFIG
+BFC00124  7D090580   EXT T1, T0, 22, 1            473:           ext     t1,t0,22,1              # Extract UDI from Config register
+BFC00128  00094C40   SLL T1, T1, 17               474:           sll     t1,t1,17                # Move UDI to Status.CEE location
+BFC0012C  40086000   MFC0 T0, Status              475:           mfc0    t0,_CP0_STATUS
+BFC00130  3C010058   LUI AT, 88                   476:           and     t0,t0,0x00580000        # Preserve SR, NMI, and BEV
+                                                  477:   #if defined(INIT_DSPR2) || defined(__PIC32_HAS_DSPR2)
+BFC00138  3C0A0100   LUI T2, 256                  478:           li      t2, 0x01000000          # Set the Status.MX bit to enable DSP
+BFC0013C  01484025   OR T0, T2, T0                479:           or      t0,t2,t0
+                                                  480:   #endif
+                                                  481:   #if defined(INIT_FPU64) || defined(__PIC32_HAS_FPU64)
+BFC00140  3C0A2400   LUI T2, 9216                 482:           li      t2, 0x24000000          # Set the Status.CU1 and Status.FR bits to
+BFC00144  01484025   OR T0, T2, T0                483:           or      t0,t2,t0                # enable the FPU in FR64 mode
+                                                  484:   #endif
+                                                  485:   
+BFC00148  01284025   OR T0, T1, T0                486:           or      t0,t1,t0                # Include Status.CEE (from UDI)
+BFC0014C  40886000   MTC0 T0, Status              487:           mtc0    t0,_CP0_STATUS
+                                                  488:           
+                                                  489:   #if defined(PIC32WK) && defined(_CP0_CONFIG3) && defined (__mips_micromips)
+                                                  490:           # Ensure that the ISAONEXEC bit is set for the microMIPS ISA for the PIC32WK family
+                                                  491:           # _bsc0 (_CP0_CONFIG3, _CP0_CONFIG3_SELECT, ISAONEXEC_MASK)
+                                                  492:           li      t1,0x10000              # ISAONEXEC bit
+                                                  493:           mfc0    t0,_CP0_CONFIG3
+                                                  494:           or      t1,t0,t1
+                                                  495:           mtc0    t1,_CP0_CONFIG3
+                                                  496:   
+                                                  497:   #endif /* PIC32WK && __mips_micromips */
+                                                  498:   
+                                                  499:   #if defined(INIT_FPU64) || defined(__PIC32_HAS_FPU64)
+                                                  500:                                           # FPU Control and Status
+BFC00150  3C0A0100   LUI T2, 256                  501:           li      t2,0x1000000            # FCSR: RM=0, FS=1, FO=0, FN=0
+                                                  502:                                           # Enables: 0b00000 E=1, V=0, Z=0, O=0, U=0, I=0
+BFC00154  44CAF800   CTC1 T2, F31                 503:           ctc1    t2, $31                 # High perf on denormal operands & tiny results
+                                                  504:   #endif
+BFC00158  000000C0   EHB                          505:           ehb
+                                                  506:   
+                                                  507:           ##################################################################
+                                                  508:           # Call the "on bootstrap" procedure
+                                                  509:           ##################################################################
+BFC0015C  3C089D00   LUI T0, -25344               510:           la      t0,_on_bootstrap
+BFC00164  0100F809   JALR T0                      511:           jalr    t0
+BFC00168  00000000   NOP                          512:           nop
+                                                  513:   
+                                                  514:           ##################################################################
+                                                  515:           # Initialize Status<BEV> for normal exception vectors
+                                                  516:           ##################################################################
+BFC0016C  40086000   MFC0 T0, Status              517:           mfc0    t0,_CP0_STATUS
+BFC00170  3C01FFBF   LUI AT, -65                  518:           and     t0,t0,0xffbfffff        # Clear BEV
+BFC0017C  40886000   MTC0 T0, Status              519:           mtc0    t0,_CP0_STATUS
+                                                  520:   
+                                                  521:           ##################################################################
+                                                  522:           # Call main. We do this via a thunk in the text section so that
+                                                  523:           # a normal jump and link can be used, enabling the startup code
+                                                  524:           # to work properly whether main is written in MIPS16 or MIPS32
+                                                  525:           # code. I.e., the linker will correctly adjust the JAL to JALX if
+                                                  526:           # necessary
+                                                  527:           ##################################################################
+BFC00180  30840000   ANDI A0, A0, 0               528:           and     a0,a0,0
+BFC00184  30A50000   ANDI A1, A1, 0               529:           and     a1,a1,0
+BFC00188  3C089D00   LUI T0, -25344               530:           la      t0,_main_entry
+BFC00190  01000008   JR T0                        531:           jr      t0
+BFC00194  00000000   NOP                          532:           nop
+                                                  533:   
+                                                  534:           .end _startup
+                                                  535:   
+                                                  536:           ##################################################################
+                                                  537:           # Boot Exception Vector Handler
+                                                  538:           # Jumps to _bootstrap_exception_handler
+                                                  539:           ##################################################################
+                                                  540:           .section .bev_handler,code,keep
+                                                  541:           .align 2
+                                                  542:           .set noreorder
+                                                  543:           .ent _bev_exception
+                                                  544:   _bev_exception:
+BFC00380  3C1A9D00   LUI K0, -25344               545:           la        k0,_bootstrap_exception_handler
+BFC00388  03400008   JR K0                        546:           jr        k0
+BFC0038C  00000000   NOP                          547:           nop
+                                                  548:   
+                                                  549:           .end _bev_exception
+                                                  550:   
+                                                  551:           ##################################################################
+                                                  552:           # General Exception Vector Handler
+                                                  553:           # Jumps to _general_exception_context
+                                                  554:           ##################################################################
+                                                  555:           .section .gen_handler,code
+                                                  556:           .align 2
+                                                  557:           .set noreorder
+                                                  558:           .ent _gen_exception
+                                                  559:   _gen_exception:
+9D000180  3C1A9D00   LUI K0, -25344               560:   0:      la      k0,_general_exception_context
+9D000188  03400008   JR K0                        561:           jr      k0
+9D00018C  00000000   NOP                          562:           nop
+9D000190  3C02BF84   LUI V0, -16508
+                                                  563:   
+                                                  564:           .end _gen_exception
+                                                  565:   
+                                                  566:   #if defined(INIT_MMU_MZ_FIXED) || defined(__PIC32_HAS_MMU_MZ_FIXED)
+                                                  567:           ##################################################################
+                                                  568:           # Simple TLB-Refill Exception Vector
+                                                  569:           # Jumps to _simple_tlb_refill_exception_context
+                                                  570:           ##################################################################
+                                                  571:           .section .simple_tlb_refill_vector,code,keep
+                                                  572:           .align 2
+                                                  573:           .set noreorder
+                                                  574:           .ent simple_tlb_refill_vector
+                                                  575:   simple_tlb_refill_vector:
+9D000000  3C1A9D00   LUI K0, -25344               576:           la      k0,_simple_tlb_refill_exception_context
+9D000008  03400008   JR K0                        577:           jr      k0
+9D00000C  00000000   NOP                          578:           nop
+9D000010  10800039   BEQ A0, ZERO, xQueueGenericReset
+                                                  579:   
+                                                  580:           .end simple_tlb_refill_vector
+                                                  581:   #endif
+                                                  582:   
+                                                  583:   #if defined(INIT_L1_CACHE) || defined(__PIC32_HAS_L1CACHE)
+                                                  584:           ##################################################################
+                                                  585:           # Cache-Error Exception Vector Handler
+                                                  586:           # Jumps to _cache_err_exception_context
+                                                  587:           ##################################################################
+                                                  588:           .section .cache_err_vector,code,keep
+                                                  589:           .align 2
+                                                  590:           .set noreorder
+                                                  591:           .ent _cache_err_vector
+                                                  592:   _cache_err_vector:
+9D000100  3C1A9D00   LUI K0, -25344               593:           la      k0,_cache_err_exception_context
+9D000108  03400008   JR K0                        594:           jr      k0
+9D00010C  00000000   NOP                          595:           nop
+9D000110  27BDFFE8   ADDIU SP, SP, -24
+                                                  596:   
+                                                  597:           .end _cache_err_vector
+                                                  598:   #endif
+                                                  599:   
+                                                  600:           .section .text.main_entry,code,keep
+                                                  601:           .align 2
+                                                  602:           .ent _main_entry
+                                                  603:   _main_entry:
+                                                  604:   
+                                                  605:   #if defined(__XC32_LIBC_INIT_ARRAY)
+                                                  606:            /* MUSL C library initialization used with MPLAB XC32 v4.00 and later */
+                                                  607:           la    t0,__libc_init_array
+                                                  608:           jalr  t0
+                                                  609:           nop
+                                                  610:   #endif
+                                                  611:   
+                                                  612:   #if defined(CPP_INIT)
+                                                  613:           .weak _init
+                                                  614:           # call .init section to run constructors etc
+9D004968  3C040000   LUI A0, 0                    615:           lui	a0,%hi(_init)
+9D00496C  27BDFFE8   ADDIU SP, SP, -24            616:           addiu	sp,sp,-24
+9D004970  24840000   ADDIU A0, A0, 0              617:           addiu	a0,a0,%lo(_init)
+9D004974  10800003   BEQ A0, ZERO, 0x9D004984     618:           beq	a0,$0,2f
+9D004978  AFBF0014   SW RA, 20(SP)                619:           sw	$31,20(sp)	 #,
+9D00497C  0080F809   JALR A0                      620:           jalr	a0
+9D004980  00000000   NOP                          621:           nop
+                                                  622:   2:
+                                                  623:   #endif
+9D004984  30840000   ANDI A0, A0, 0               624:           and     a0,a0,0
+9D004988  30A50000   ANDI A1, A1, 0               625:           and     a1,a1,0
+                                                  626:   
+                                                  627:           ##################################################################
+                                                  628:   
+                                                  629:           # Call main
+                                                  630:           ##################################################################
+9D00498C  3C089D00   LUI T0, -25344               631:           la    	t0,main
+9D004994  0100F809   JALR T0                      632:           jalr 	t0
+9D004998  00000000   NOP                          633:           nop
+                                                  634:   
+                                                  635:   #if defined(CALL_EXIT)
+                                                  636:           ##################################################################
+                                                  637:           # Call exit()
+                                                  638:           ##################################################################
+                                                  639:           jal exit
+                                                  640:           nop
+                                                  641:   #endif
+                                                  642:   
+                                                  643:           ##################################################################
+                                                  644:           # Just in case, go into infinite loop
+                                                  645:           # Call a software breakpoint only with -mdebugger compiler option
+                                                  646:           ##################################################################
+                                                  647:           .weak __exception_handler_break
+                                                  648:   __crt0_exit:
+                                                  649:   1:
+9D00499C  3C029D00   LUI V0, -25344               650:           la      v0,__exception_handler_break
+9D0049A4  10400003   BEQ V0, ZERO, 0x9D0049B4     651:           beq     v0,0,0f
+9D0049A8  00000000   NOP                          652:           nop
+9D0049AC  0040F809   JALR V0                      653:           jalr    v0
+9D0049B0  00000000   NOP                          654:           nop
+                                                  655:   
+9D0049B4  1000FFF9   BEQ ZERO, ZERO, 0x9D00499C   656:   0:      b       1b
+9D0049B8  00000000   NOP                          657:           nop
+                                                  658:   
+                                                  659:           .globl __crt0_exit
+                                                  660:           .end _main_entry

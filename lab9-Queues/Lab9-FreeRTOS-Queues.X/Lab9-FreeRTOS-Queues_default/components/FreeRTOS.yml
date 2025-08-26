@@ -1,0 +1,300 @@
+configVersion: 1.0.0
+componentName: FreeRTOS
+coreVersion: 5.8.2
+device: PIC32MZ2048EFM144
+library: []
+dependency:
+- dependencyPackage: class com.microchip.mcc.harmony.HarmonyModule
+  name: FreeRTOS
+  type: module
+  version: ''
+- dependencyPackage: ''
+  name: FreeRTOS-Kernel
+  type: package
+  version: V11.2.0
+- dependencyPackage: ''
+  name: core
+  type: package
+  version: v3.15.2
+customDataClassName: com.microchip.utils_mh3.utils.persistence.CustomModuleData
+data:
+  attachments: {}
+  elementPosition:
+    attributes:
+      id: __ROOTVIEW
+    children:
+    - children:
+      - attributes:
+          id: FreeRTOS
+          x: '31'
+          y: '185'
+        type: ElementPosition
+      type: ElementPositions
+    type: ComponentGraph
+  symbols:
+    FREERTOS_DAEMON_TASK_STARTUP_HOOK:
+      attributes:
+        id: FREERTOS_DAEMON_TASK_STARTUP_HOOK
+      children:
+      - children:
+        - attributes:
+            id: visible
+          children:
+          - type: Value
+            value: 'true'
+          type: Boolean
+        type: Attributes
+      - children:
+        - attributes:
+            id: FreeRTOS
+            value: 'true'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    FREERTOS_INCLUDE_ETASKGETSTATE:
+      attributes:
+        id: FREERTOS_INCLUDE_ETASKGETSTATE
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_INCLUDE_UXTASKGETSTACKHIGHWATERMARK:
+      attributes:
+        id: FREERTOS_INCLUDE_UXTASKGETSTACKHIGHWATERMARK
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_INCLUDE_UXTASKGETSTACKHIGHWATERMARK2:
+      attributes:
+        id: FREERTOS_INCLUDE_UXTASKGETSTACKHIGHWATERMARK2
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_INCLUDE_XSEMAPHOREGETMUTEXHOLDER:
+      attributes:
+        id: FREERTOS_INCLUDE_XSEMAPHOREGETMUTEXHOLDER
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_INCLUDE_XTASKABORTDELAY:
+      attributes:
+        id: FREERTOS_INCLUDE_XTASKABORTDELAY
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_INCLUDE_XTASKGETHANDLE:
+      attributes:
+        id: FREERTOS_INCLUDE_XTASKGETHANDLE
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_INCLUDE_XTASKGETIDLETASKHANDLE:
+      attributes:
+        id: FREERTOS_INCLUDE_XTASKGETIDLETASKHANDLE
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_INCLUDE_XTASKGETSCHEDULERSTATE:
+      attributes:
+        id: FREERTOS_INCLUDE_XTASKGETSCHEDULERSTATE
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_INCLUDE_XTASKRESUMEFROMISR:
+      attributes:
+        id: FREERTOS_INCLUDE_XTASKRESUMEFROMISR
+      children:
+      - children:
+        - attributes:
+            value: 'false'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_INCLUDE_XTIMERPENDFUNCTIONCALL:
+      attributes:
+        id: FREERTOS_INCLUDE_XTIMERPENDFUNCTIONCALL
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_MINIMAL_STACK_SIZE:
+      attributes:
+        id: FREERTOS_MINIMAL_STACK_SIZE
+      children:
+      - children:
+        - attributes:
+            value: '256'
+          type: User
+        type: Values
+      type: Integer
+    FREERTOS_QUEUE_REGISTRY_SIZE:
+      attributes:
+        id: FREERTOS_QUEUE_REGISTRY_SIZE
+      children:
+      - children:
+        - attributes:
+            value: '20'
+          type: User
+        type: Values
+      type: Integer
+    FREERTOS_STATIC_ALLOC:
+      attributes:
+        id: FREERTOS_STATIC_ALLOC
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_TIMER_QUEUE_LENGTH:
+      attributes:
+        id: FREERTOS_TIMER_QUEUE_LENGTH
+      children:
+      - children:
+        - attributes:
+            id: visible
+          children:
+          - type: Value
+            value: 'true'
+          type: Boolean
+        type: Attributes
+      - children:
+        - attributes:
+            id: FreeRTOS
+            value: '10'
+          type: Dynamic
+        type: Values
+      type: Integer
+    FREERTOS_TIMER_TASK_PRIORITY:
+      attributes:
+        id: FREERTOS_TIMER_TASK_PRIORITY
+      children:
+      - children:
+        - attributes:
+            id: visible
+          children:
+          - type: Value
+            value: 'true'
+          type: Boolean
+        type: Attributes
+      - children:
+        - attributes:
+            id: FreeRTOS
+            value: '3'
+          type: Dynamic
+        type: Values
+      type: Integer
+    FREERTOS_TIMER_TASK_STACK_DEPTH:
+      attributes:
+        id: FREERTOS_TIMER_TASK_STACK_DEPTH
+      children:
+      - children:
+        - attributes:
+            id: visible
+          children:
+          - type: Value
+            value: 'true'
+          type: Boolean
+        type: Attributes
+      - children:
+        - attributes:
+            id: FreeRTOS
+            value: '256'
+          type: Dynamic
+        type: Values
+      type: Integer
+    FREERTOS_USE_QUEUE_SETS:
+      attributes:
+        id: FREERTOS_USE_QUEUE_SETS
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_USE_TIMERS:
+      attributes:
+        id: FREERTOS_USE_TIMERS
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    SET_RTOS:
+      attributes:
+        id: SET_RTOS
+      children:
+      - children:
+        - attributes:
+            id: FreeRTOS
+            value: FreeRTOS
+          type: Dynamic
+        type: Values
+      type: String
+    FREERTOS_USE_TRACE_FACILITY:
+      attributes:
+        id: FREERTOS_USE_TRACE_FACILITY
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_USE_STATS_FORMATTING_FUNCTIONS:
+      attributes:
+        id: FREERTOS_USE_STATS_FORMATTING_FUNCTIONS
+      children:
+      - children:
+        - attributes:
+            id: visible
+          children:
+          - type: Value
+            value: 'true'
+          type: Boolean
+        type: Attributes
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+  userData: {}
