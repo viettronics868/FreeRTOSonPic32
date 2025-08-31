@@ -12,7 +12,7 @@ modules:
 - uart6
 generatedFileHashHistoryMap:
 - file: ..\src\config\default\FreeRTOSConfig.h
-  hash: f88e34886253bb95e137d70f456f1f2873b5e70c933bedf2b36ff15840f71790
+  hash: 1e276ddd184c98eb98cecdc81bf6ce380d737e011ed1dd3e97e94e02ec84d4cf
 - file: ..\src\config\default\definitions.h
   hash: 8ca571ea717084dfd9964eee8f43d16b817e117792242b4b2388d307fa4cdf62
 - file: ..\src\config\default\device.h
@@ -22,7 +22,7 @@ generatedFileHashHistoryMap:
 - file: ..\src\config\default\exceptions.c
   hash: 08af3364c3e5ad8bc07f5300f41ea8ded05493f9a5e9b77947ab3426322671bb
 - file: ..\src\config\default\freertos_hooks.c
-  hash: 48beeff10a0a7c0fefe4aa9800b859c58ede1af59903d7e295928c773481556a
+  hash: 467a47ee33b91b0124a0265816148a98214943b524c5f784548d9a71432a499b
 - file: ..\src\config\default\initialization.c
   hash: f3b6017cc2df6c9a52bf9a0935419b8f3a5eb67032a1c16639eb4956da1caf76
 - file: ..\src\config\default\interrupts.c

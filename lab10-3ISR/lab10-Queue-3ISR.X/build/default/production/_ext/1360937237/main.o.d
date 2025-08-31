@@ -22,7 +22,8 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
  ../src/third_party/rtos/FreeRTOS/Source/include/queue.h \
  ../src/third_party/rtos/FreeRTOS/Source/include/task.h \
  ../src/third_party/rtos/FreeRTOS/Source/include/queue.h \
- ../src/config/default/device_cache.h
+ ../src/config/default/device_cache.h \
+ ../src/third_party/rtos/FreeRTOS/Source/include/timers.h
 
 ../src/config/default/definitions.h:
 
@@ -71,3 +72,5 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
 ../src/third_party/rtos/FreeRTOS/Source/include/queue.h:
 
 ../src/config/default/device_cache.h:
+
+../src/third_party/rtos/FreeRTOS/Source/include/timers.h:

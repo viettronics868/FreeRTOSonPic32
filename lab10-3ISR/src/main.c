@@ -21,7 +21,7 @@
  *		Static Queue (tenQueue)
 		Static Task (prvLKFunction)
  *		ISR callback (Btn1Handler and Btn2Handler and Btn3Handler)
- *	Applying technique:  function pointers
+ *	Applying technique:  function pointers and debounce on key press
 
   Summary:
     Queues are the primary mechanism for inter-task communications. They can be used
@@ -55,6 +55,20 @@ to send messages between tasks, and between interrupts and tasks. these lines of
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "timers.h"
+
+//declare debounce timer and buffer and callback
+static StaticTimer_t xBtn1DebounceTimerBuffer;
+static StaticTimer_t xBtn2DebounceTimerBuffer;
+static StaticTimer_t xBtn3DebounceTimerBuffer;
+
+static TimerHandle_t xBtn1DebounceTimer;
+static TimerHandle_t xBtn2DebounceTimer;
+static TimerHandle_t xBtn3DebounceTimer;
+
+static void prvBtn1DebounceFunction(TimerHandle_t xTimer);
+static void prvBtn2DebounceFunction(TimerHandle_t xTimer);
+static void prvBtn3DebounceFunction(TimerHandle_t xTimer);
 
 //declare variables of debug task
 static StackType_t xLKTcbBuffer[configMINIMAL_STACK_SIZE];
@@ -123,49 +137,31 @@ BtnData_t btnThree = {
 	.msg = "shhhh"
 };
 
-//declare callback of ISR if press button 1
-static void Btn1Handler(GPIO_PIN pin, uintptr_t context ){
-	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+//declare ISR callback of btn1 for debounce 50ms
+static void Btn1Handler(GPIO_PIN pin, uintptr_t context){
 	if (BTN_1_Get() == BUTTON_PRESS_STATE){
-		if (xQueueSendFromISR(
-			tenQueue,
-			&btnOne,
-			&(xHigherPriorityTaskWoken))==pdFAIL ){
-				Debug_msg("cannot send object from ISR \r\n");
-				exit(EXIT_FAILURE);
-			}
+		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+		xTimerResetFromISR(xBtn1DebounceTimer, &xHigherPriorityTaskWoken);
+		portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);		
 	}
-	portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 }
 
-//declare callback of ISR if press button 2
+//declare ISR callback of Btn2 for debounce 50ms
 static void Btn2Handler(GPIO_PIN pin, uintptr_t context){
-	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	if (BTN_2_Get() == BUTTON_PRESS_STATE){
-		if (xQueueSendFromISR(
-			tenQueue,
-			&btnTwo,
-			&(xHigherPriorityTaskWoken)) == pdFAIL){
-				Debug_msg("cannot send object from ISR \r\n");
-				exit(EXIT_FAILURE);
-			}
+		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+		xTimerResetFromISR(xBtn2DebounceTimer, &xHigherPriorityTaskWoken);
+		portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 	}
-	portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 }
 
-//declare callback of ISR if press button 3
+//declare ISR callback of Btn3 for debounce 50ms
 static void Btn3Handler(GPIO_PIN pin, uintptr_t context){
-	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	if (BTN_3_Get() == BUTTON_PRESS_STATE){
-		if (xQueueSendFromISR(
-			tenQueue,
-			&btnThree,
-			&(xHigherPriorityTaskWoken)) == pdFAIL){
-				Debug_msg("cannot send object from ISR \r\n");
-				exit(EXIT_FAILURE);
-			}
+		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+		xTimerResetFromISR(xBtn3DebounceTimer, &xHigherPriorityTaskWoken);
+		portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 	}
-	portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 }
 
 //declare three functions for toggling three leds
@@ -200,7 +196,44 @@ int main ( void )
     LED_1_Clear();
     LED_2_Clear();
     LED_3_Clear();
-
+    
+    //create 3 debounce timers
+    xBtn1DebounceTimer = xTimerCreateStatic(
+	    "BTN1 Debounce ",
+	    pdMS_TO_TICKS(50),
+	    pdFALSE,
+	    (void *)1,
+	    prvBtn1DebounceFunction,
+	    &xBtn1DebounceTimerBuffer);
+    if (xBtn1DebounceTimer == NULL){
+	    Debug_msg("cannot create debounce on btn1 \r\n");
+	    return (EXIT_FAILURE);
+    }
+    
+    xBtn2DebounceTimer = xTimerCreateStatic(
+	    "BTN2 Debounce",
+	    pdMS_TO_TICKS(50),
+	    pdFALSE,
+	    (void *)2,
+	    prvBtn2DebounceFunction,
+	    &xBtn2DebounceTimerBuffer);
+    if (xBtn2DebounceTimer == NULL){
+	    Debug_msg("cannot create debounce on btn2 \r\n");
+	    return (EXIT_FAILURE);
+    }
+    
+    xBtn3DebounceTimer = xTimerCreateStatic(
+	    "BTN3 Debounce",
+	    pdMS_TO_TICKS(50),
+	    pdFALSE,
+	    (void *)3,
+	    prvBtn3DebounceFunction,
+	    &xBtn3DebounceTimerBuffer);
+    if (xBtn3DebounceTimer == NULL){
+	    Debug_msg("cannot create debounce on btn3 \r\n");
+	    return (EXIT_FAILURE);
+    }
+    
     //register dmac handler
     DMAC_ChannelCallbackRegister(
 	    DMAC_CHANNEL_0,
@@ -255,6 +288,7 @@ int main ( void )
 	    Debug_msg("cannot create tenQueue \r\n");
 	    return (EXIT_FAILURE);
 	}
+    
 
     vTaskStartScheduler();
     
@@ -292,7 +326,7 @@ static void prvLKFunction(void * pvParams){
 		if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE){		
 
 			//format the string 
-			sprintf((char *)u6TxBuffer, "button %d was pressed and %s is changed \r\n", localLK.btnID, localLK.color);
+			sprintf((char *)u6TxBuffer, "button %d was pressed-debounce 50ms and %s is changed \r\n", localLK.btnID, localLK.color);
 			DCACHE_CLEAN_BY_ADDR(
 				(uint32_t) u6TxBuffer,
 				strlen((const char *) u6TxBuffer));
@@ -307,6 +341,43 @@ static void prvLKFunction(void * pvParams){
 		}
 	}
 }
+
+static void prvBtn1DebounceFunction(TimerHandle_t xTimer){
+	if (BTN_1_Get() == BUTTON_PRESS_STATE){
+		if (xQueueSend(
+			tenQueue,
+			&btnOne,
+			pdMS_TO_TICKS(20)) == pdFAIL){
+						Debug_msg("cannot send btn1 to queue \r\n");
+						exit(EXIT_FAILURE);
+					}
+	}
+}
+
+static void prvBtn2DebounceFunction(TimerHandle_t xTimer){
+	if (BTN_2_Get() == BUTTON_PRESS_STATE){
+		if (xQueueSend(
+			tenQueue,
+			&btnTwo,
+			pdMS_TO_TICKS(20)) == pdFAIL){
+						Debug_msg("cannot send btn2 to queue \r\n");
+						exit(EXIT_FAILURE);
+					}
+	}
+}
+
+static void prvBtn3DebounceFunction(TimerHandle_t xTimer){
+	if (BTN_3_Get() == BUTTON_PRESS_STATE){
+		if (xQueueSend(
+			tenQueue,
+			&btnThree,
+			pdMS_TO_TICKS(20)) == pdFAIL){
+						Debug_msg("cannot send btn3 to queue \r\n");
+						exit(EXIT_FAILURE);
+					}
+	}
+}
+
 
 /*******************************************************************************
  End of File
