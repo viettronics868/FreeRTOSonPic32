@@ -22,12 +22,12 @@ Curiority 2.0 pic32 mz ef board
 * [Using Queues for Inter-Task Communication]
 * [Using Queues for Communication between Interrupts and Tasks]
 
-## Software Timer
-# [Using software timer for interval timing]
-# [Using software timer for handling debounce when key press]
-
 ## Semaphore and Mutex
 * [Semaphore]
 * [Mutex]
+
+## Software Timer
+* [Using software timer for interval timing]
+* [Using software timer for handling debounce when key press]
 
 (continue)
