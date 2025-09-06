@@ -30,4 +30,8 @@ Curiority 2.0 pic32 mz ef board
 * [Using software timer for interval timing]
 * [Using software timer for handling debounce when key press]
 
+## Priority Inversion and Priority Inheritance
+* [Using static tasks to simulate the situation of blocking/release tasks]
+
+
 (continue)
