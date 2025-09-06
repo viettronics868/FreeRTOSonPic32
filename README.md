@@ -26,4 +26,8 @@ Curiority 2.0 pic32 mz ef board
 * [Semaphore]
 * [Mutex]
 
+## Software Timer
+* [Using software timer for interval timing]
+* [Using software timer for handling debounce when key press]
+
 (continue)
