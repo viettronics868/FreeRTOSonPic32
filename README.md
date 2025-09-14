@@ -31,7 +31,9 @@ Curiority 2.0 pic32 mz ef board
 * [Using software timer for handling debounce when key press]
 
 ## Priority Inversion and Priority Inheritance
-* [Using static tasks to simulate the situation of blocking/release tasks]
+* [Using static tasks to simulate the implementation of Priority Inversion and Priority Inheritance]
 
+## Event Group
+* [Using static tasks to learn implementation of event group on push button and DMA transfer]
 
 (continue)
