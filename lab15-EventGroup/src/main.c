@@ -56,10 +56,10 @@
 
 #define KEY_PRESS_STATE 0
 #define DEBOUNCE 50
-#define RED_INTERVAL_SLOW 1500
-#define RED_INTERVAL_FAST 700
-#define RED_INTERVAL_FASTER 300
-#define RED_INTERVAL_FASTEST 100
+#define RED_INTERVAL_SLOW 3000
+#define RED_INTERVAL_FAST 1500
+#define RED_INTERVAL_FASTER 700
+#define RED_INTERVAL_FASTEST 200
 #define RED_INDEX 4
 
 static uint32_t red_interval[RED_INDEX] = {	RED_INTERVAL_SLOW,
@@ -69,6 +69,7 @@ static uint32_t red_interval[RED_INDEX] = {	RED_INTERVAL_SLOW,
 
 //declare variable to count RED_INDEX
 static uint8_t red_count = 0;
+
 //declare variables for task RED
 static StaticTask_t xTaskRedBuffer;
 static StackType_t xTaskRedTcbBuffer[configMINIMAL_STACK_SIZE];
@@ -94,9 +95,6 @@ static void prvBlinkingRedFunction(TimerHandle_t xTimer);
 #define BIT_PERIOD_RED (1U << 0)
 //define event group bit 2 for UART6 completed
 #define BIT_UART6_COMPLETE (1U<<1)
-//variable for showing message on com port
-static uint8_t show_msg = 1;
-static uint8_t start_app = 0;
 
 //declare event group
 static EventGroupHandle_t xEveGr;
@@ -135,10 +133,12 @@ static void LAB15_App(void){
 	//turn RED on
 	LED1_Clear();
 	
-	start_app = 0;
-	
-	Debug_msg("lab15-Event Group-push a button for blinking LED \r\n");
-	
+	Debug_msg("lab15-Event Group-push a button for changing period of blinking LED \r\n");
+		
+	char redMsg[64];
+	sprintf(redMsg,"   RED started blinking at period of %d ms \r\n", red_interval[red_count & (RED_INDEX-1)]);
+	Debug_msg(redMsg);
+
 	//register callback for gpio ISR
 	GPIO_PinInterruptCallbackRegister(
 				SW1_PIN,
@@ -167,7 +167,7 @@ static void LAB15_App(void){
 	
 	//create software timer for blinking LED - auto reload
 	xBlinkingRed = xTimerCreateStatic(
-				"blinking RED 1000ms",
+				"blinking RED ",
 				pdMS_TO_TICKS(red_interval[red_count & (RED_INDEX-1)]),
 				pdTRUE,
 				(void *)2,
@@ -200,10 +200,7 @@ static void LAB15_App(void){
 				}
 	//create mutex
 	xMutex = xSemaphoreCreateMutex();
-	
 }
-
-
 
 // *****************************************************************************
 // *****************************************************************************
@@ -236,7 +233,12 @@ static void prvDebounceRedFunction(TimerHandle_t xTimer){
 	(void) xTimer;
 	if (SW1_Get() == KEY_PRESS_STATE){
 		red_count++;
-		//if (red_count & (RED_INDEX -1))
+		
+		//set BIT_PERIOD_RED to enable show message on com p ort
+		xEventGroupSetBits(
+				xEveGr,
+				BIT_PERIOD_RED);
+		//change period of blinking
 		if (xTimerChangePeriod(
 			xBlinkingRed,
 			pdMS_TO_TICKS(red_interval[red_count & (RED_INDEX-1)]),//wrap around 0, 1, 2, 3
@@ -244,7 +246,6 @@ static void prvDebounceRedFunction(TimerHandle_t xTimer){
 				Debug_msg("cannot change timer period .. \r\n");
 				exit(EXIT_FAILURE);
 				}
-		show_msg = 1;
 		if (red_count == 4) red_count = 0;//prevent undefine behavior of out of uint8_t
 	}
 }
@@ -253,14 +254,6 @@ static void prvDebounceRedFunction(TimerHandle_t xTimer){
 static void prvBlinkingRedFunction(TimerHandle_t xTimer){
 	(void) xTimer;
 	LED1_Toggle();
-	
-	if (show_msg == 1){
-		//set BIT_PERIOD_RED to enable show message on com port
-		xEventGroupSetBits(
-				xEveGr,
-				BIT_PERIOD_RED);
-		show_msg = 0;
-	}
 }
 
 //a task function to show message on com port
@@ -274,34 +267,29 @@ static void prvTaskRedFunction(void * Params){
 				pdFALSE,
 				portMAX_DELAY) == pdTRUE)
 		{
-			if (start_app != 0) //do not show message when starting app
+			if (xSemaphoreTake(xMutex, pdMS_TO_TICKS(100)))
 			{
-				if (xSemaphoreTake(xMutex, pdMS_TO_TICKS(100)))
-				{
-					sprintf((char *)u6TxBuffer, "  Mayday Mayday RED blinking changed period\r\n");
-					DCACHE_CLEAN_BY_ADDR(
-						(uint32_t) u6TxBuffer,
-						strlen((const char *) u6TxBuffer));
-					DMAC_ChannelTransfer(
-						DMAC_CHANNEL_0,
-						(const void *) u6TxBuffer,
-						strlen((const char *)u6TxBuffer),
-						(const void *)&U6TXREG, 1, 1);
-					xEventGroupWaitBits( //waiting for BIT_UART6_COMPLETE for transfer event complete
-						xEveGr,
-						BIT_UART6_COMPLETE,
-						pdTRUE,
-						pdFALSE,
-						portMAX_DELAY); 
+				sprintf((char *)u6TxBuffer, "  Mayday Mayday RED blinking period %d ms\r\n", 
+						red_interval[red_count & (RED_INDEX-1)]);
+				DCACHE_CLEAN_BY_ADDR(
+					(uint32_t) u6TxBuffer,
+					strlen((const char *) u6TxBuffer));
+				DMAC_ChannelTransfer(
+					DMAC_CHANNEL_0,
+					(const void *) u6TxBuffer,
+					strlen((const char *)u6TxBuffer),
+					(const void *)&U6TXREG, 1, 1);
+				xEventGroupWaitBits( //waiting for BIT_UART6_COMPLETE for transfer event complete
+					xEveGr,
+					BIT_UART6_COMPLETE,
+					pdTRUE,
+					pdFALSE,
+					portMAX_DELAY); 
 
-					xSemaphoreGive(xMutex);
-				}
-			} else {
-				start_app = 1;
-			}
+				xSemaphoreGive(xMutex);
+			}			
 		}
-	}
-	
+	}	
 }
 /*******************************************************************************
  End of File
