@@ -1,0 +1,131 @@
+configVersion: 1.0.0
+coreVersion: 5.8.2
+spaHostVersion: 1.0.0
+device: PIC32MZ2048EFM144
+deviceLibrary:
+  className: null
+groupModules: []
+modules:
+- FreeRTOS
+- core
+- dfp
+- uart6
+generatedFileHashHistoryMap:
+- file: ..\src\config\default\FreeRTOSConfig.h
+  hash: cbc819e3c77bee8ed75559c12dd37afa6a002b7e611f7ebda667883dfe0d0804
+- file: ..\src\config\default\definitions.h
+  hash: 8ca571ea717084dfd9964eee8f43d16b817e117792242b4b2388d307fa4cdf62
+- file: ..\src\config\default\device.h
+  hash: 4d4341a6f9628cea0bf73f980b639f7cb81089e55a60ad7e434be2a71e477442
+- file: ..\src\config\default\device_cache.h
+  hash: fd0e9c9a7fbeb01fb289eecda8b0f0b3cfe0b86da13bc26801f611faa3b9a74c
+- file: ..\src\config\default\exceptions.c
+  hash: 08af3364c3e5ad8bc07f5300f41ea8ded05493f9a5e9b77947ab3426322671bb
+- file: ..\src\config\default\freertos_hooks.c
+  hash: 467a47ee33b91b0124a0265816148a98214943b524c5f784548d9a71432a499b
+- file: ..\src\config\default\initialization.c
+  hash: f3b6017cc2df6c9a52bf9a0935419b8f3a5eb67032a1c16639eb4956da1caf76
+- file: ..\src\config\default\interrupts.c
+  hash: d9aae448bc0af71503c9893b5e7daddee1b43d83d67f60834f4b68310e4486ee
+- file: ..\src\config\default\interrupts.h
+  hash: 4b13bb78565bcdc0e2c4d72e487565bef5d7c242ac5ba5a7ab71933cc04fe40d
+- file: ..\src\config\default\interrupts_a.S
+  hash: 50cd9c4442096cdeaffc76821b9e75f7a2fcfeb58755b3c6f39b5c26e898cae6
+- file: ..\src\config\default\p32MZ2048EFM144.ld
+  hash: 46672b0a06fb42db5538d8da4ec36d5fcc0498ab85defe9a284be2853972bf25
+- file: ..\src\config\default\peripheral\cache\plib_cache.c
+  hash: 500634fa5c5cb4efb91faa7a54e3ccbb26ad7ff6d188ff0e91cbaabc606cf054
+- file: ..\src\config\default\peripheral\cache\plib_cache.h
+  hash: da01fae7f39626c9f25c0c8f4f9a8cf25ed0c4b8dd6c0d4bae146210efe8da46
+- file: ..\src\config\default\peripheral\cache\plib_cache_local.h
+  hash: 91d5a1a9920a5aea939f16fe36e9346b60ba3a8577817f24c0e8198cba2e089d
+- file: ..\src\config\default\peripheral\cache\plib_cache_pic32mz.S
+  hash: 227a6c622b0100cceef847043fb5afdace49f27df33d00e61d413bc9da34932d
+- file: ..\src\config\default\peripheral\cache\plib_cache_pic32mz.h
+  hash: e401b896c670e8d0e1714eafc2b93a12b1fe6592783951e2353471bb4ced58e8
+- file: ..\src\config\default\peripheral\clk\plib_clk.c
+  hash: 6f274f0d9b8401413fbea323ac6e007ac344439f0b3482712e7db414fb83e6c5
+- file: ..\src\config\default\peripheral\clk\plib_clk.h
+  hash: 35384f2e13e59b7190bf77f6996baf3ea2377ec42df94979a6f793326def5255
+- file: ..\src\config\default\peripheral\dmac\plib_dmac.c
+  hash: 3bfc6a83c1f426095d0883edde24e4efb52c672b90e154211d7f2b7b33a302ad
+- file: ..\src\config\default\peripheral\dmac\plib_dmac.h
+  hash: 78b9533671371600d12031eb6280ef51c292677cc636c809bb1b16ab772a4f8d
+- file: ..\src\config\default\peripheral\evic\plib_evic.c
+  hash: 6853372f3562849cd07ecd5827a1c4935f75d5219c9977df283ce2c12745a128
+- file: ..\src\config\default\peripheral\evic\plib_evic.h
+  hash: 8d23fbec497272607e866c677642a16f99b84018980cee72d0df73db1f696194
+- file: ..\src\config\default\peripheral\gpio\plib_gpio.c
+  hash: c44f93c726089fd2e115291fbfa61fb6d773882fd1ae3a1cf692b4acb91b5cbe
+- file: ..\src\config\default\peripheral\gpio\plib_gpio.h
+  hash: cd3b8e3aacc103dfaa16e534e95b3f32b7a9e569db6ffb6fefe0bc7d12a14eab
+- file: ..\src\config\default\peripheral\uart\plib_uart6.c
+  hash: e106583af40234e59ef32429a8aea1c1ef3ce6d14e2ee82d1d4c056f4d107a23
+- file: ..\src\config\default\peripheral\uart\plib_uart6.h
+  hash: 40d84d92442efda8eb207164d3e2c990de83709f7337846c1dee898f059a02de
+- file: ..\src\config\default\peripheral\uart\plib_uart_common.h
+  hash: b87295faadae4157d5880e22970f89094f2b51e1866930040a90ba49c6b29797
+- file: ..\src\config\default\stdio\xc32_monitor.c
+  hash: 858f8710d4287200a5ee7f3b3ad7c24f505aed9c05c16956ab0ff9f7bb162a6a
+- file: ..\src\config\default\toolchain_specifics.h
+  hash: fd2fc7bbe60706409cc0c0a525825c0194f6f71adc0a89e6310041f06dc2f645
+- file: ..\src\main.c
+  hash: d3c233d419e6304bfacbafc18cc68c0f5c26e365f23b20ea40ccfac458f664c5
+- file: ..\src\third_party\rtos\FreeRTOS\Source\FreeRTOS_tasks.c
+  hash: cfe709de0389c51886c02a762e1d99a9ec14707fa8da43beef122950b14d4157
+- file: ..\src\third_party\rtos\FreeRTOS\Source\croutine.c
+  hash: b7e15578564ae248cc890ebe688284c244b7e5054b4c7c39b6726fcd38732e05
+- file: ..\src\third_party\rtos\FreeRTOS\Source\event_groups.c
+  hash: f8739c4756c1a6a90aa2981366d706a3affd845da03c97c34f5b2e7537493e68
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\FreeRTOS.h
+  hash: 97ec7b3c36b5108aace2f61445d2bb9bb26a341c8aa3d5157328263010d0e1cd
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\croutine.h
+  hash: 946e11d339dab5f7be136775cfa75f7d51c0054b3d7efeff64d03263ee11de99
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\deprecated_definitions.h
+  hash: 282c3df0a516c46db7cd8c841150b9b6685deaf92eeadff79dbfe05915dc565b
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\event_groups.h
+  hash: b93938a05e1541408653b8e101047866f4ab1fed54aa2e6beec88266ef1a6f88
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\list.h
+  hash: 8a5c93ee448eb6e5546522d73e08583aae2c0a66cdada4f4dd75728f98c7e76c
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\message_buffer.h
+  hash: f676f0ecc4a82d072ecec62101111041dff274cac0b1ebca48dd2b9f6432df38
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\mpu_prototypes.h
+  hash: 87e780ca9e277b0c2ecbb626833a55def268384d187a0ea67a840a9e1b00f41c
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\mpu_syscall_numbers.h
+  hash: dba0a617ae4a6ff4e387deda6f6a03859770141526e213a79de159a8d1e408ec
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\mpu_wrappers.h
+  hash: 18e555457219812bf8442d878486e53aa4e79f213cab3255cce88180d67f6f1c
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\portable.h
+  hash: d5f408bc6b2fff5314ce5e0097536be3842d8193f475c36dfac5168ff5fbf93a
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\projdefs.h
+  hash: 5ebc971e87d3b0a5a886e8c3dcf63c985aaa135a6a92876720841f0be885ce43
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\queue.h
+  hash: 079547ba473b4011dd8e185f90dbdf9a4eab8c5df38367f0eb616e0c796848cd
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\semphr.h
+  hash: 5cf73d53ab31e5b620975cdaf5425f86f95fcd5f790539441636120c903b5cff
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\stack_macros.h
+  hash: b67cf756197b65f07b8adbe43d1c186b4a3fddf6560f481e9ef54cea4f12feac
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\stream_buffer.h
+  hash: f4e11d510196cfefb2eae87e97ee0308edb4f6d163ae3da05d0edaa1d06a1bdf
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\task.h
+  hash: 474e34e5bd9c2b5cac49e1882d32f49da84389aeb3cfbeff334fcba16af9110c
+- file: ..\src\third_party\rtos\FreeRTOS\Source\include\timers.h
+  hash: fe31bfc90d53f73048d1636860abf7b26abfc5161efd63afa5e7d74c701e152e
+- file: ..\src\third_party\rtos\FreeRTOS\Source\list.c
+  hash: c81cbc0d9e2e4f5035a4b7e47995d0cd9303868e0a3f519a95f8f9969f382e6c
+- file: ..\src\third_party\rtos\FreeRTOS\Source\portable\MPLAB\PIC32MZ\ISR_Support.h
+  hash: ff22c30603f62e1b37943f4790210b933aafbf326e845432769508746b9beac5
+- file: ..\src\third_party\rtos\FreeRTOS\Source\portable\MPLAB\PIC32MZ\port.c
+  hash: ccb9a4db4b373a2b61a050388ab2ccf44e80f7c4c60524a0a725267afaf7b354
+- file: ..\src\third_party\rtos\FreeRTOS\Source\portable\MPLAB\PIC32MZ\port_asm.S
+  hash: 676d9af7c64688c41cfb0ce0d66ebaa05db796f395006a608663b457c1a918eb
+- file: ..\src\third_party\rtos\FreeRTOS\Source\portable\MPLAB\PIC32MZ\portmacro.h
+  hash: ffe13c49af2f5e2f36677fed97bb6d7f86e8cfe90f1b3031b2fa8500230e5ff8
+- file: ..\src\third_party\rtos\FreeRTOS\Source\portable\MemMang\heap_1.c
+  hash: 67e383bb8c906ee3fa7f3eea37a04aad97f1f08672dcd0622a509e5b2f0dba26
+- file: ..\src\third_party\rtos\FreeRTOS\Source\queue.c
+  hash: bf0fc16ab27174e9fdce65bc66bb1b3e77820032944ab84c7eb16b31b53a1c88
+- file: ..\src\third_party\rtos\FreeRTOS\Source\stream_buffer.c
+  hash: 121def826654fe8741ac93d2bbda1203851f42ed4c602061d8c1c01a64624b14
+- file: ..\src\third_party\rtos\FreeRTOS\Source\timers.c
+  hash: 5a9060e28436b0c58b60f678e1eeb552b4142930cef4641dce262839334ae3f3
