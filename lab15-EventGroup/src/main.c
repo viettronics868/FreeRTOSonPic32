@@ -21,7 +21,7 @@
 
   Summary:
     Event Group is an important concept in FreeRTOS task synchronization. An Event Group is a collection of bits (like flags).
- * Each bit can represent an event (e.g., ?sensor ready,? ?UART complete,? ?button pressed?). When the event occur and condition 
+ * Each bit can represent an event (e.g., sensor ready,UART complete,button pressed). When the event occur and condition 
  * is met (bits set), the task unblocks.
  * . these lines of code is implemented/verified and software is released for educational only
 
