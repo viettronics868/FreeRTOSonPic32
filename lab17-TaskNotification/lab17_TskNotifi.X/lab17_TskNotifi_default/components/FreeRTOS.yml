@@ -237,4 +237,14 @@ data:
           type: Dynamic
         type: Values
       type: String
+    FREERTOS_TASK_NOTIFICATION_ARRAY_ENTRIES:
+      attributes:
+        id: FREERTOS_TASK_NOTIFICATION_ARRAY_ENTRIES
+      children:
+      - children:
+        - attributes:
+            value: '3'
+          type: User
+        type: Values
+      type: Integer
   userData: {}

@@ -573,7 +573,7 @@ data:
       children:
       - children:
         - attributes:
-            value: LEJD_B
+            value: LED_B
           type: User
         type: Values
       type: String
@@ -2115,6 +2115,400 @@ data:
           type: User
         type: Values
       type: Boolean
+    BSP_PIN_117_FUNCTION_TYPE:
+      attributes:
+        id: BSP_PIN_117_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_117_FUNCTION_NAME:
+      attributes:
+        id: BSP_PIN_117_FUNCTION_NAME
+      children:
+      - children:
+        - attributes:
+            value: LED3
+          type: User
+        type: Values
+      type: String
+    SYS_PORT_J_TRIS:
+      attributes:
+        id: SYS_PORT_J_TRIS
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: '136'
+          type: Dynamic
+        type: Values
+      type: Hex
+    BSP_PIN_117_DIR:
+      attributes:
+        id: BSP_PIN_117_DIR
+      children:
+      - children:
+        - attributes:
+            value: Out
+          type: User
+        type: Values
+      type: String
+    SYS_PORT_J_LAT:
+      attributes:
+        id: SYS_PORT_J_LAT
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: '136'
+          type: Dynamic
+        type: Values
+      type: Hex
+    BSP_PIN_117_LAT:
+      attributes:
+        id: BSP_PIN_117_LAT
+      children:
+      - children:
+        - attributes:
+            value: High
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_126_FUNCTION_TYPE:
+      attributes:
+        id: BSP_PIN_126_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_126_FUNCTION_NAME:
+      attributes:
+        id: BSP_PIN_126_FUNCTION_NAME
+      children:
+      - children:
+        - attributes:
+            value: LED2
+          type: User
+        type: Values
+      type: String
+    SYS_PORT_K_TRIS:
+      attributes:
+        id: SYS_PORT_K_TRIS
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: '128'
+          type: Dynamic
+        type: Values
+      type: Hex
+    BSP_PIN_126_DIR:
+      attributes:
+        id: BSP_PIN_126_DIR
+      children:
+      - children:
+        - attributes:
+            value: Out
+          type: User
+        type: Values
+      type: String
+    SYS_PORT_K_LAT:
+      attributes:
+        id: SYS_PORT_K_LAT
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: '128'
+          type: Dynamic
+        type: Values
+      type: Hex
+    BSP_PIN_126_LAT:
+      attributes:
+        id: BSP_PIN_126_LAT
+      children:
+      - children:
+        - attributes:
+            value: High
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_134_FUNCTION_TYPE:
+      attributes:
+        id: BSP_PIN_134_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_134_FUNCTION_NAME:
+      attributes:
+        id: BSP_PIN_134_FUNCTION_NAME
+      children:
+      - children:
+        - attributes:
+            value: LED1
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_134_DIR:
+      attributes:
+        id: BSP_PIN_134_DIR
+      children:
+      - children:
+        - attributes:
+            value: Out
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_134_LAT:
+      attributes:
+        id: BSP_PIN_134_LAT
+      children:
+      - children:
+        - attributes:
+            value: High
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_131_FUNCTION_TYPE:
+      attributes:
+        id: BSP_PIN_131_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_131_FUNCTION_NAME:
+      attributes:
+        id: BSP_PIN_131_FUNCTION_NAME
+      children:
+      - children:
+        - attributes:
+            value: SW1
+          type: User
+        type: Values
+      type: String
+    CHANGE_NOTICE_J_INTERRUPT_ENABLE_UPDATE:
+      attributes:
+        id: CHANGE_NOTICE_J_INTERRUPT_ENABLE_UPDATE
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: 'false'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    EVIC_126_ENABLE:
+      attributes:
+        id: EVIC_126_ENABLE
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: 'true'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    CHANGE_NOTICE_J_INTERRUPT_ENABLE:
+      attributes:
+        id: CHANGE_NOTICE_J_INTERRUPT_ENABLE
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: 'true'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    EVIC_126_HANDLER_LOCK:
+      attributes:
+        id: EVIC_126_HANDLER_LOCK
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: 'true'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    CHANGE_NOTICE_J_INTERRUPT_HANDLER_LOCK:
+      attributes:
+        id: CHANGE_NOTICE_J_INTERRUPT_HANDLER_LOCK
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: 'true'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    EVIC_126_INTERRUPT_HANDLER:
+      attributes:
+        id: EVIC_126_INTERRUPT_HANDLER
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: CHANGE_NOTICE_J_InterruptHandler
+          type: Dynamic
+        type: Values
+      type: String
+    CHANGE_NOTICE_J_INTERRUPT_HANDLER:
+      attributes:
+        id: CHANGE_NOTICE_J_INTERRUPT_HANDLER
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: CHANGE_NOTICE_J_InterruptHandler
+          type: Dynamic
+        type: Values
+      type: String
+    SYS_PORT_J_CN_USED:
+      attributes:
+        id: SYS_PORT_J_CN_USED
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: 'true'
+          type: Dynamic
+        type: Values
+      type: Boolean
+    SYS_PORT_J_CNEN:
+      attributes:
+        id: SYS_PORT_J_CNEN
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: '112'
+          type: Dynamic
+        type: Values
+      type: Hex
+    BSP_PIN_131_CN:
+      attributes:
+        id: BSP_PIN_131_CN
+      children:
+      - children:
+        - attributes:
+            value: 'True'
+          type: User
+        type: Values
+      type: String
+    SYS_PORT_J_CNPU:
+      attributes:
+        id: SYS_PORT_J_CNPU
+      children:
+      - children:
+        - attributes:
+            id: core
+            value: '112'
+          type: Dynamic
+        type: Values
+      type: Hex
+    BSP_PIN_131_PU:
+      attributes:
+        id: BSP_PIN_131_PU
+      children:
+      - children:
+        - attributes:
+            value: 'True'
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_132_FUNCTION_TYPE:
+      attributes:
+        id: BSP_PIN_132_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_132_FUNCTION_NAME:
+      attributes:
+        id: BSP_PIN_132_FUNCTION_NAME
+      children:
+      - children:
+        - attributes:
+            value: SW2
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_132_CN:
+      attributes:
+        id: BSP_PIN_132_CN
+      children:
+      - children:
+        - attributes:
+            value: 'True'
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_132_PU:
+      attributes:
+        id: BSP_PIN_132_PU
+      children:
+      - children:
+        - attributes:
+            value: 'True'
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_133_FUNCTION_TYPE:
+      attributes:
+        id: BSP_PIN_133_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_133_FUNCTION_NAME:
+      attributes:
+        id: BSP_PIN_133_FUNCTION_NAME
+      children:
+      - children:
+        - attributes:
+            value: SW3
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_133_CN:
+      attributes:
+        id: BSP_PIN_133_CN
+      children:
+      - children:
+        - attributes:
+            value: 'True'
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_133_PU:
+      attributes:
+        id: BSP_PIN_133_PU
+      children:
+      - children:
+        - attributes:
+            value: 'True'
+          type: User
+        type: Values
+      type: String
   userData:
     children:
     - attributes:

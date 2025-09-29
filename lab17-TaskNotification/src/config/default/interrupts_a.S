@@ -70,6 +70,24 @@ IntVectorCHANGE_NOTICE_C_Handler:
     nop
     portRESTORE_CONTEXT
     .end   IntVectorCHANGE_NOTICE_C_Handler
+    .extern  CHANGE_NOTICE_J_Handler
+
+    .section   .vector_126,code, keep
+    .equ     __vector_dispatch_126, IntVectorCHANGE_NOTICE_J_Handler
+    .global  __vector_dispatch_126
+    .set     nomicromips
+    .set     noreorder
+    .set     nomips16
+    .set     noat
+    .ent  IntVectorCHANGE_NOTICE_J_Handler
+
+IntVectorCHANGE_NOTICE_J_Handler:
+    portSAVE_CONTEXT
+    la    s6,  CHANGE_NOTICE_J_Handler
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end   IntVectorCHANGE_NOTICE_J_Handler
     .extern  DMA0_Handler
 
     .section   .vector_134,code, keep

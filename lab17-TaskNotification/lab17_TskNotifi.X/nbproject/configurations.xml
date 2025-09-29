@@ -35,6 +35,8 @@
           <itemPath>../src/config/default/definitions.h</itemPath>
           <itemPath>../src/config/default/interrupts.h</itemPath>
           <itemPath>../src/config/default/FreeRTOSConfig.h</itemPath>
+          <itemPath>../src/Lab17_STAmac.h</itemPath>
+          <itemPath>../src/Lab17_DMA.h</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="FreeRTOS" displayName="FreeRTOS" projectFiles="true">
@@ -132,6 +134,8 @@
           <itemPath>../src/config/default/interrupts_a.S</itemPath>
           <itemPath>../src/config/default/exceptions.c</itemPath>
           <itemPath>../src/config/default/freertos_hooks.c</itemPath>
+          <itemPath>../src/Lab17_STAmac.c</itemPath>
+          <itemPath>../src/Lab17_DMA.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="FreeRTOS" displayName="FreeRTOS" projectFiles="true">
@@ -159,6 +163,10 @@
       <itemPath>../src/main.c</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>../src</Elem>
+    <Elem>.</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">

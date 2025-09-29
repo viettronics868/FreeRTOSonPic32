@@ -47,10 +47,10 @@
 
 
 /* Array to store callback objects of each configured interrupt */
-static volatile GPIO_PIN_CALLBACK_OBJ portPinCbObj[1];
+static volatile GPIO_PIN_CALLBACK_OBJ portPinCbObj[4];
 
 /* Array to store number of interrupts in each PORT Channel + previous interrupt count */
-static uint8_t portNumCb[10 + 1] = { 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, };
+static uint8_t portNumCb[10 + 1] = { 0, 0, 0, 1, 1, 1, 1, 1, 1, 4, 4, };
 
 /******************************************************************************
   Function:
@@ -83,7 +83,17 @@ void GPIO_Initialize ( void )
     /* PORTG Initialization */
     /* PORTH Initialization */
     /* PORTJ Initialization */
+    LATJ = 0x88U; /* Initial Latch Value */
+    TRISJCLR = 0x88U; /* Direction Control */
+    CNPUJSET = 0x70U; /* Pull-Up Enable */
+
+    /* Change Notice Enable */
+    CNCONJSET = _CNCONJ_ON_MASK;
+    PORTJ;
+    IEC3SET = _IEC3_CNJIE_MASK;
     /* PORTK Initialization */
+    LATK = 0x80U; /* Initial Latch Value */
+    TRISKCLR = 0x80U; /* Direction Control */
 
     /* Unlock system for PPS configuration */
     SYSKEY = 0x00000000U;
@@ -106,7 +116,13 @@ void GPIO_Initialize ( void )
     /* Initialize Interrupt Pin data structures */
     portPinCbObj[0 + 0].pin = GPIO_PIN_RC15;
     
-    for(i=0U; i<1U; i++)
+    portPinCbObj[1 + 0].pin = GPIO_PIN_RJ4;
+    
+    portPinCbObj[1 + 1].pin = GPIO_PIN_RJ5;
+    
+    portPinCbObj[1 + 2].pin = GPIO_PIN_RJ6;
+    
+    for(i=0U; i<4U; i++)
     {
         portPinCbObj[i].callback = NULL;
     }
@@ -420,6 +436,44 @@ void __attribute__((used)) CHANGE_NOTICE_C_InterruptHandler(void)
 
     /* Check pending events and call callback if registered */
     for(i = 0; i < 1; i++)
+    {
+        pin = portPinCbObj[i].pin;
+
+        if((portPinCbObj[i].callback != NULL) && ((status & ((uint32_t)1U << (pin & 0xFU))) != 0U))
+        {
+            context = portPinCbObj[i].context;
+
+            portPinCbObj[i].callback (pin, context);
+        }
+    }
+}
+
+// *****************************************************************************
+/* Function:
+    void CHANGE_NOTICE_J_InterruptHandler(void)
+
+  Summary:
+    Interrupt Handler for change notice interrupt for channel J.
+
+  Remarks:
+    It is an internal function called from ISR, user should not call it directly.
+*/
+    
+void __attribute__((used)) CHANGE_NOTICE_J_InterruptHandler(void)
+{
+    uint8_t i;
+    uint32_t status;
+    GPIO_PIN pin;
+    uintptr_t context;
+
+    status  = CNSTATJ;
+    status &= CNENJ;
+
+    PORTJ;
+    IFS3CLR = _IFS3_CNJIF_MASK;
+
+    /* Check pending events and call callback if registered */
+    for(i = 1; i < 4; i++)
     {
         pin = portPinCbObj[i].pin;
 

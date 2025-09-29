@@ -57,6 +57,7 @@
 // *****************************************************************************
 // *****************************************************************************
 void CHANGE_NOTICE_C_InterruptHandler( void );
+void CHANGE_NOTICE_J_InterruptHandler( void );
 void DMA0_InterruptHandler( void );
 
 
