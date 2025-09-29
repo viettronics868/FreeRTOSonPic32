@@ -39,7 +39,7 @@ Curiority 2.0 pic32 mz ef board
 ## Event Group Synchronization
 * [Using LED blinking to implement event group synchronization]
 
-## Event Group Synchronization
+## Task Notification and Task Handle in Static Task
 * [Task Notification]
 * [Extra work: Refactor source code of the labs]
 
