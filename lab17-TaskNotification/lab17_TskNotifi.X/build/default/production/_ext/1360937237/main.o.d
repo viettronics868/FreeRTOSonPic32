@@ -26,7 +26,9 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
  ../src/third_party/rtos/FreeRTOS/Source/include/event_groups.h \
  ../src/third_party/rtos/FreeRTOS/Source/include/timers.h \
  ../src/Lab17_STAmac.h ../src/Lab17_DMA.h \
- ../src/config/default/peripheral/dmac/plib_dmac.h
+ ../src/config/default/peripheral/dmac/plib_dmac.h ../src/Lab17_UART6.h \
+ ../src/Lab17_Timers.h ../src/Lab17_SWxISR.h \
+ ../src/config/default/peripheral/gpio/plib_gpio.h
 
 ../src/config/default/definitions.h:
 
@@ -85,3 +87,11 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
 ../src/Lab17_DMA.h:
 
 ../src/config/default/peripheral/dmac/plib_dmac.h:
+
+../src/Lab17_UART6.h:
+
+../src/Lab17_Timers.h:
+
+../src/Lab17_SWxISR.h:
+
+../src/config/default/peripheral/gpio/plib_gpio.h:

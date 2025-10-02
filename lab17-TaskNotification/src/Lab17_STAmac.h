@@ -10,11 +10,11 @@
 
 //state definition
 typedef  enum{
-    INIT_STA,
-            SW1_STA,
-            SW2_STA,
-            SW3_STA,
-            SW4_STA,
+            INIT_STA,
+            SW1_ENT,
+            SW2_ENT,
+            SW3_ENT,
+            SW4_ENT,
             IDLE_STA
 }Lab17State_t;
 

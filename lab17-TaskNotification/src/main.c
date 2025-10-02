@@ -33,6 +33,8 @@
     machines of all modules in the system, and create tasks . 
  * 
  * the files Lab17_DMA.c and Lab17_DMA.h are helper functions
+ * the files Lab17_UART6.c and Lab17_UART6.h are showing debug messages on com port
+ * the files Lab17_Timers.c and Lab17_Timers.h are for timer-related functions
  * the files Lab17_STAmac.c and Lab17_STAmac.h are for the task of state machine core logic
  * 
  * Debug messages or notifications are showed via UART6.  DMA module is using to make the task/CPU unblock and transmission continues in background.
@@ -61,6 +63,9 @@
 
 #include "Lab17_STAmac.h"
 #include "Lab17_DMA.h"
+#include "Lab17_UART6.h"
+#include "Lab17_Timers.h"
+#include "Lab17_SWxISR.h"
 
 //define interval of timers
 #define KEY_PRESSED_EVENT 0
@@ -82,7 +87,7 @@
 #define BIT_SW4 (1U << 4)
 
 //declare event group
-static EventGroupHandle_t xLab17EveGr;
+EventGroupHandle_t xLab17EveGr;
 
 //declare task handle to register the task to dma callback
 //static TaskHandle_t xTaskSTAHandle;
@@ -144,45 +149,6 @@ static StackType_t xSTAmacStack[configMINIMAL_STACK_SIZE];
 //static StackType_t xTaskOfficeStack[configMINIMAL_STACK_SIZE];
 //static StaticTask_t xTaskOfficeBuffer;
 
-//declare a buffer for UART6
-//static uint8_t __attribute__ ((aligned (16))) u6TxBuffer[128] = {0};
- uint8_t __attribute__ ((aligned (16))) u6TxBuffer[128] = {0};
-
-//static void prvShowMsg(char * msg){
-//	sprintf((char *)u6TxBuffer, msg);
-//	DCACHE_CLEAN_BY_ADDR(
-//				(uint32_t)u6TxBuffer,
-//				strlen((const char *)u6TxBuffer));
-//	DMAC_ChannelTransfer(
-//			DMAC_CHANNEL_0,
-//			(const void *)u6TxBuffer,
-//			strlen((const char *)u6TxBuffer),
-//			(const void *)&U6TXREG, 1, 1);
-//}
-
-
-//static void vDMA0Callback(DMAC_TRANSFER_EVENT event, uintptr_t contextHandle){
-//	BaseType_t xHPTW = pdFALSE;
-//	if (event == DMAC_TRANSFER_EVENT_COMPLETE){
-//		//Notify task handle on slot 1
-//		xTaskNotifyIndexedFromISR(
-//					xTaskDMAHandle,
-//					0,	 //index 0 for DMA0 
-//					0,	//value will be ignored for eIncrement
-//					eIncrement,
-//					&xHPTW);
-//		portEND_SWITCHING_ISR(xHPTW);
-//	}
-//}
-
-static void Debug_msg(char * msg){
-	while (*msg){
-		while (U6STAbits.UTXBF);
-		U6TXREG = *msg++;
-		while (!U6STAbits.TRMT);
- 	}
-}
-
 //declare application of lab 17
 static void vLab17_Init(void){
 	
@@ -194,11 +160,6 @@ static void vLab17_Init(void){
 	LED_G_Clear();
 	LED_B_Clear();
 	
-	//register callback for DMA transfer
-	DMAC_ChannelCallbackRegister(
-				DMAC_CHANNEL_0,
-				vDMA0Callback,
-				0);
 	
 	//create task OfficeAdmin
 //	if (xTaskCreateStatic(
@@ -212,6 +173,7 @@ static void vLab17_Init(void){
 //		Debug_msg("cannot create Office task \r\n...");
 //		exit(EXIT_FAILURE);
 //	}
+	
 	//create task Lab17 state machine core and assign task handle
 	xTaskSTAHandle = xTaskCreateStatic(
 				vLab17STAmac,
@@ -229,6 +191,12 @@ static void vLab17_Init(void){
 		
 	//create mutex
 	xMutex = xSemaphoreCreateMutex();
+	
+	Lab17_DMAInit();
+	Lab17_TimersInit();
+	Lab17_SWxISRInit();
+	
+	//Debug_msg("oooo \r\n");
 }
 
 

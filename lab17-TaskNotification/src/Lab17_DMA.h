@@ -8,10 +8,11 @@
 #ifndef LAB17_DMA_H
 #define	LAB17_DMA_H
 
-#include "config/default/peripheral/dmac/plib_dmac.h"
+#include "plib_dmac.h"
 
 void vDMA0Callback(DMAC_TRANSFER_EVENT event, uintptr_t contextHandle);
 void vComPortMsg(char * msg);
+void Lab17_DMAInit(void);
 
 #ifdef	__cplusplus
 extern "C" {

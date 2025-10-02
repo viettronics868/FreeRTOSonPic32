@@ -12,7 +12,7 @@ modules:
 - uart6
 generatedFileHashHistoryMap:
 - file: ..\src\config\default\FreeRTOSConfig.h
-  hash: 797b7ff65b875d2bfb6e152bb5ff05c309a6c5331dff9fc88a6af63e0fd8d1f2
+  hash: 09662a7d29044761101bcd0059701f8dc984380cc00c547377f5b592a0951696
 - file: ..\src\config\default\definitions.h
   hash: 8ca571ea717084dfd9964eee8f43d16b817e117792242b4b2388d307fa4cdf62
 - file: ..\src\config\default\device.h
