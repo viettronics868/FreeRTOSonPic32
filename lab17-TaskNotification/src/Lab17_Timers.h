@@ -10,6 +10,8 @@
 
 #include "timers.h"
 
+#define SW_COUNT 4
+
 void Lab17_TimersInit(void);
 void prvSW1DebounceTimerCallback(TimerHandle_t xTimer);
 

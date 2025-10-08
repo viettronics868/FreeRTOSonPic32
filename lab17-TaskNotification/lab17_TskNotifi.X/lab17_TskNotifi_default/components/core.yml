@@ -647,66 +647,6 @@ data:
           type: User
         type: Values
       type: String
-    BSP_PIN_72_CN:
-      attributes:
-        id: BSP_PIN_72_CN
-      children:
-      - children:
-        - attributes:
-            value: 'True'
-          type: User
-        type: Values
-      type: String
-    BSP_PIN_72_DIR:
-      attributes:
-        id: BSP_PIN_72_DIR
-      children:
-      - children:
-        - attributes:
-            value: ''
-          type: User
-        type: Values
-      type: String
-    BSP_PIN_72_FUNCTION_NAME:
-      attributes:
-        id: BSP_PIN_72_FUNCTION_NAME
-      children:
-      - children:
-        - attributes:
-            value: SW4
-          type: User
-        type: Values
-      type: String
-    BSP_PIN_72_FUNCTION_TYPE:
-      attributes:
-        id: BSP_PIN_72_FUNCTION_TYPE
-      children:
-      - children:
-        - attributes:
-            value: GPIO
-          type: User
-        type: Values
-      type: String
-    BSP_PIN_72_MODE:
-      attributes:
-        id: BSP_PIN_72_MODE
-      children:
-      - children:
-        - attributes:
-            value: DIGITAL
-          type: User
-        type: Values
-      type: String
-    BSP_PIN_72_PU:
-      attributes:
-        id: BSP_PIN_72_PU
-      children:
-      - children:
-        - attributes:
-            value: 'True'
-          type: User
-        type: Values
-      type: String
     BSP_PIN_73_MODE:
       attributes:
         id: BSP_PIN_73_MODE
@@ -2131,7 +2071,7 @@ data:
       children:
       - children:
         - attributes:
-            value: LED3
+            value: LED2
           type: User
         type: Values
       type: String
@@ -2193,7 +2133,7 @@ data:
       children:
       - children:
         - attributes:
-            value: LED2
+            value: LED1
           type: User
         type: Values
       type: String
@@ -2255,7 +2195,7 @@ data:
       children:
       - children:
         - attributes:
-            value: LED1
+            value: LED0
           type: User
         type: Values
       type: String
@@ -2295,7 +2235,7 @@ data:
       children:
       - children:
         - attributes:
-            value: SW1
+            value: SW0
           type: User
         type: Values
       type: String
@@ -2445,7 +2385,7 @@ data:
       children:
       - children:
         - attributes:
-            value: SW2
+            value: SW1
           type: User
         type: Values
       type: String
@@ -2485,7 +2425,7 @@ data:
       children:
       - children:
         - attributes:
-            value: SW3
+            value: SW2
           type: User
         type: Values
       type: String
@@ -2502,6 +2442,56 @@ data:
     BSP_PIN_133_PU:
       attributes:
         id: BSP_PIN_133_PU
+      children:
+      - children:
+        - attributes:
+            value: 'True'
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_72_MODE:
+      attributes:
+        id: BSP_PIN_72_MODE
+      children:
+      - children:
+        - attributes:
+            value: DIGITAL
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_72_FUNCTION_TYPE:
+      attributes:
+        id: BSP_PIN_72_FUNCTION_TYPE
+      children:
+      - children:
+        - attributes:
+            value: GPIO
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_72_FUNCTION_NAME:
+      attributes:
+        id: BSP_PIN_72_FUNCTION_NAME
+      children:
+      - children:
+        - attributes:
+            value: SW3
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_72_CN:
+      attributes:
+        id: BSP_PIN_72_CN
+      children:
+      - children:
+        - attributes:
+            value: 'True'
+          type: User
+        type: Values
+      type: String
+    BSP_PIN_72_PU:
+      attributes:
+        id: BSP_PIN_72_PU
       children:
       - children:
         - attributes:

@@ -92,83 +92,83 @@
 #define LED_B_GetLatch()          ((LATB >> 9) & 0x1U)
 #define LED_B_PIN                  GPIO_PIN_RB9
 
-/*** Macros for SW4 pin ***/
-#define SW4_Set()               (LATCSET = (1U<<15))
-#define SW4_Clear()             (LATCCLR = (1U<<15))
-#define SW4_Toggle()            (LATCINV= (1U<<15))
-#define SW4_OutputEnable()      (TRISCCLR = (1U<<15))
-#define SW4_InputEnable()       (TRISCSET = (1U<<15))
-#define SW4_Get()               ((PORTC >> 15) & 0x1U)
-#define SW4_GetLatch()          ((LATC >> 15) & 0x1U)
-#define SW4_PIN                  GPIO_PIN_RC15
-#define SW4_InterruptEnable()   (CNENCSET = (1U<<15))
-#define SW4_InterruptDisable()  (CNENCCLR = (1U<<15))
-
-/*** Macros for LED3 pin ***/
-#define LED3_Set()               (LATJSET = (1U<<3))
-#define LED3_Clear()             (LATJCLR = (1U<<3))
-#define LED3_Toggle()            (LATJINV= (1U<<3))
-#define LED3_OutputEnable()      (TRISJCLR = (1U<<3))
-#define LED3_InputEnable()       (TRISJSET = (1U<<3))
-#define LED3_Get()               ((PORTJ >> 3) & 0x1U)
-#define LED3_GetLatch()          ((LATJ >> 3) & 0x1U)
-#define LED3_PIN                  GPIO_PIN_RJ3
+/*** Macros for SW3 pin ***/
+#define SW3_Set()               (LATCSET = (1U<<15))
+#define SW3_Clear()             (LATCCLR = (1U<<15))
+#define SW3_Toggle()            (LATCINV= (1U<<15))
+#define SW3_OutputEnable()      (TRISCCLR = (1U<<15))
+#define SW3_InputEnable()       (TRISCSET = (1U<<15))
+#define SW3_Get()               ((PORTC >> 15) & 0x1U)
+#define SW3_GetLatch()          ((LATC >> 15) & 0x1U)
+#define SW3_PIN                  GPIO_PIN_RC15
+#define SW3_InterruptEnable()   (CNENCSET = (1U<<15))
+#define SW3_InterruptDisable()  (CNENCCLR = (1U<<15))
 
 /*** Macros for LED2 pin ***/
-#define LED2_Set()               (LATKSET = (1U<<7))
-#define LED2_Clear()             (LATKCLR = (1U<<7))
-#define LED2_Toggle()            (LATKINV= (1U<<7))
-#define LED2_OutputEnable()      (TRISKCLR = (1U<<7))
-#define LED2_InputEnable()       (TRISKSET = (1U<<7))
-#define LED2_Get()               ((PORTK >> 7) & 0x1U)
-#define LED2_GetLatch()          ((LATK >> 7) & 0x1U)
-#define LED2_PIN                  GPIO_PIN_RK7
-
-/*** Macros for SW1 pin ***/
-#define SW1_Set()               (LATJSET = (1U<<4))
-#define SW1_Clear()             (LATJCLR = (1U<<4))
-#define SW1_Toggle()            (LATJINV= (1U<<4))
-#define SW1_OutputEnable()      (TRISJCLR = (1U<<4))
-#define SW1_InputEnable()       (TRISJSET = (1U<<4))
-#define SW1_Get()               ((PORTJ >> 4) & 0x1U)
-#define SW1_GetLatch()          ((LATJ >> 4) & 0x1U)
-#define SW1_PIN                  GPIO_PIN_RJ4
-#define SW1_InterruptEnable()   (CNENJSET = (1U<<4))
-#define SW1_InterruptDisable()  (CNENJCLR = (1U<<4))
-
-/*** Macros for SW2 pin ***/
-#define SW2_Set()               (LATJSET = (1U<<5))
-#define SW2_Clear()             (LATJCLR = (1U<<5))
-#define SW2_Toggle()            (LATJINV= (1U<<5))
-#define SW2_OutputEnable()      (TRISJCLR = (1U<<5))
-#define SW2_InputEnable()       (TRISJSET = (1U<<5))
-#define SW2_Get()               ((PORTJ >> 5) & 0x1U)
-#define SW2_GetLatch()          ((LATJ >> 5) & 0x1U)
-#define SW2_PIN                  GPIO_PIN_RJ5
-#define SW2_InterruptEnable()   (CNENJSET = (1U<<5))
-#define SW2_InterruptDisable()  (CNENJCLR = (1U<<5))
-
-/*** Macros for SW3 pin ***/
-#define SW3_Set()               (LATJSET = (1U<<6))
-#define SW3_Clear()             (LATJCLR = (1U<<6))
-#define SW3_Toggle()            (LATJINV= (1U<<6))
-#define SW3_OutputEnable()      (TRISJCLR = (1U<<6))
-#define SW3_InputEnable()       (TRISJSET = (1U<<6))
-#define SW3_Get()               ((PORTJ >> 6) & 0x1U)
-#define SW3_GetLatch()          ((LATJ >> 6) & 0x1U)
-#define SW3_PIN                  GPIO_PIN_RJ6
-#define SW3_InterruptEnable()   (CNENJSET = (1U<<6))
-#define SW3_InterruptDisable()  (CNENJCLR = (1U<<6))
+#define LED2_Set()               (LATJSET = (1U<<3))
+#define LED2_Clear()             (LATJCLR = (1U<<3))
+#define LED2_Toggle()            (LATJINV= (1U<<3))
+#define LED2_OutputEnable()      (TRISJCLR = (1U<<3))
+#define LED2_InputEnable()       (TRISJSET = (1U<<3))
+#define LED2_Get()               ((PORTJ >> 3) & 0x1U)
+#define LED2_GetLatch()          ((LATJ >> 3) & 0x1U)
+#define LED2_PIN                  GPIO_PIN_RJ3
 
 /*** Macros for LED1 pin ***/
-#define LED1_Set()               (LATJSET = (1U<<7))
-#define LED1_Clear()             (LATJCLR = (1U<<7))
-#define LED1_Toggle()            (LATJINV= (1U<<7))
-#define LED1_OutputEnable()      (TRISJCLR = (1U<<7))
-#define LED1_InputEnable()       (TRISJSET = (1U<<7))
-#define LED1_Get()               ((PORTJ >> 7) & 0x1U)
-#define LED1_GetLatch()          ((LATJ >> 7) & 0x1U)
-#define LED1_PIN                  GPIO_PIN_RJ7
+#define LED1_Set()               (LATKSET = (1U<<7))
+#define LED1_Clear()             (LATKCLR = (1U<<7))
+#define LED1_Toggle()            (LATKINV= (1U<<7))
+#define LED1_OutputEnable()      (TRISKCLR = (1U<<7))
+#define LED1_InputEnable()       (TRISKSET = (1U<<7))
+#define LED1_Get()               ((PORTK >> 7) & 0x1U)
+#define LED1_GetLatch()          ((LATK >> 7) & 0x1U)
+#define LED1_PIN                  GPIO_PIN_RK7
+
+/*** Macros for SW0 pin ***/
+#define SW0_Set()               (LATJSET = (1U<<4))
+#define SW0_Clear()             (LATJCLR = (1U<<4))
+#define SW0_Toggle()            (LATJINV= (1U<<4))
+#define SW0_OutputEnable()      (TRISJCLR = (1U<<4))
+#define SW0_InputEnable()       (TRISJSET = (1U<<4))
+#define SW0_Get()               ((PORTJ >> 4) & 0x1U)
+#define SW0_GetLatch()          ((LATJ >> 4) & 0x1U)
+#define SW0_PIN                  GPIO_PIN_RJ4
+#define SW0_InterruptEnable()   (CNENJSET = (1U<<4))
+#define SW0_InterruptDisable()  (CNENJCLR = (1U<<4))
+
+/*** Macros for SW1 pin ***/
+#define SW1_Set()               (LATJSET = (1U<<5))
+#define SW1_Clear()             (LATJCLR = (1U<<5))
+#define SW1_Toggle()            (LATJINV= (1U<<5))
+#define SW1_OutputEnable()      (TRISJCLR = (1U<<5))
+#define SW1_InputEnable()       (TRISJSET = (1U<<5))
+#define SW1_Get()               ((PORTJ >> 5) & 0x1U)
+#define SW1_GetLatch()          ((LATJ >> 5) & 0x1U)
+#define SW1_PIN                  GPIO_PIN_RJ5
+#define SW1_InterruptEnable()   (CNENJSET = (1U<<5))
+#define SW1_InterruptDisable()  (CNENJCLR = (1U<<5))
+
+/*** Macros for SW2 pin ***/
+#define SW2_Set()               (LATJSET = (1U<<6))
+#define SW2_Clear()             (LATJCLR = (1U<<6))
+#define SW2_Toggle()            (LATJINV= (1U<<6))
+#define SW2_OutputEnable()      (TRISJCLR = (1U<<6))
+#define SW2_InputEnable()       (TRISJSET = (1U<<6))
+#define SW2_Get()               ((PORTJ >> 6) & 0x1U)
+#define SW2_GetLatch()          ((LATJ >> 6) & 0x1U)
+#define SW2_PIN                  GPIO_PIN_RJ6
+#define SW2_InterruptEnable()   (CNENJSET = (1U<<6))
+#define SW2_InterruptDisable()  (CNENJCLR = (1U<<6))
+
+/*** Macros for LED0 pin ***/
+#define LED0_Set()               (LATJSET = (1U<<7))
+#define LED0_Clear()             (LATJCLR = (1U<<7))
+#define LED0_Toggle()            (LATJINV= (1U<<7))
+#define LED0_OutputEnable()      (TRISJCLR = (1U<<7))
+#define LED0_InputEnable()       (TRISJSET = (1U<<7))
+#define LED0_Get()               ((PORTJ >> 7) & 0x1U)
+#define LED0_GetLatch()          ((LATJ >> 7) & 0x1U)
+#define LED0_PIN                  GPIO_PIN_RJ7
 
 
 // *****************************************************************************

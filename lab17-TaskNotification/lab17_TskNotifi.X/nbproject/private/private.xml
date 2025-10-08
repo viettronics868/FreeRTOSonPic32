@@ -4,10 +4,11 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/tuiday/Documents/Lab-FreeRTOS/lab17-TaskNotification/src/Lab17_SWxISR.c</file>
-            <file>file:/C:/Users/tuiday/Documents/Lab-FreeRTOS/lab17-TaskNotification/src/third_party/rtos/FreeRTOS/Source/include/timers.h</file>
-            <file>file:/C:/Users/tuiday/Documents/Lab-FreeRTOS/lab17-TaskNotification/src/third_party/rtos/FreeRTOS/Source/include/task.h</file>
-            <file>file:/C:/Users/tuiday/Documents/Lab-FreeRTOS/lab17-TaskNotification/src/config/default/FreeRTOSConfig.h</file>
+            <file>file:/C:/Users/tuiday/Documents/Lab-FreeRTOS/lab17-TaskNotification/src/Lab17_Timers.c</file>
+            <file>file:/C:/Users/tuiday/Documents/Lab-FreeRTOS/lab17-TaskNotification/src/main.c</file>
             <file>file:/C:/Users/tuiday/Documents/Lab-FreeRTOS/lab17-TaskNotification/src/Lab17_STAmac.c</file>
+            <file>file:/C:/Users/tuiday/Documents/Lab-FreeRTOS/lab17-TaskNotification/src/Lab17_Timers.h</file>
+            <file>file:/C:/Users/tuiday/Documents/Lab-FreeRTOS/lab17-TaskNotification/src/Lab17_gpio.h</file>
             <file>file:/C:/Users/tuiday/Documents/Lab-FreeRTOS/lab17-TaskNotification/src/Lab17_STAmac.h</file>
         </group>
     </open-files>

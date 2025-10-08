@@ -40,6 +40,7 @@
           <itemPath>../src/Lab17_Timers.h</itemPath>
           <itemPath>../src/Lab17_UART6.h</itemPath>
           <itemPath>../src/Lab17_SWxISR.h</itemPath>
+          <itemPath>../src/Lab17_gpio.h</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="FreeRTOS" displayName="FreeRTOS" projectFiles="true">
@@ -142,6 +143,7 @@
           <itemPath>../src/Lab17_Timers.c</itemPath>
           <itemPath>../src/Lab17_UART6.c</itemPath>
           <itemPath>../src/Lab17_SWxISR.c</itemPath>
+          <itemPath>../src/Lab17_gpio.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="FreeRTOS" displayName="FreeRTOS" projectFiles="true">

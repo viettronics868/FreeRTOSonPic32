@@ -5,7 +5,7 @@
  * Created on September 30, 2025, 8:11 PM
  */
 
-
+#pragma once
 
 #ifndef LAB17_SWXISR_H
 #define	LAB17_SWXISR_H

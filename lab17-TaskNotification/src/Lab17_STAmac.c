@@ -10,7 +10,8 @@
 
 #include "FreeRTOS.h"
 #include "Lab17_STAmac.h"
-
+#include "Lab17_Timers.h"
+#include "Lab17_gpio.h"
 #include "task.h"
 #include "semphr.h"
 #include "Lab17_DMA.h"
@@ -18,64 +19,53 @@
 #include "plib_gpio.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
 
+//#define BIT_SW1 (1U << 1)
+//#define BIT_SW2 (1U << 2)
+//#define BIT_SW3 (1U << 3)
+//#define BIT_SW4 (1U << 4)
 
-
-extern Lab17State_t currentSTA;
+Lab17State_t currentSTA = INIT_STA;
 extern SemaphoreHandle_t xMutex;
+
+static char dmaStr[50] = {0};
 
 void vLab17STAmac(void * pvParams){
 	(void) pvParams;
+	
+	uint32_t ulEvents;
 	for (;;){
-		switch (currentSTA){
-		case INIT_STA:
-			
+		switch (currentSTA){ 
+		case (INIT_STA):
 			if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE){
-				vComPortMsg("lab 17 - Task Notification-20250930 \r\n");
-//				ulTaskNotifyTakeIndexed(
-//						0,
-//						pdTRUE,
-//						0);
+				vComPortMsg("Lab17 - Task Notification \r\n");
 				xSemaphoreGive(xMutex);
 			}
-			
-			currentSTA = IDLE_STA;
-			
+			currentSTA = DEPLOY_STA;
 			break;
-			
-		case SW1_ENT:
-			LED1_Toggle();
-			if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE){
-				vComPortMsg("    SW 1 press \r\n ");
-				xSemaphoreGive(xMutex);
-			}
-			
-			currentSTA = IDLE_STA;
-			break;
-			
-		case SW2_ENT:
-			break;
-			
-		case SW3_ENT:
-			break;
-			
-		case SW4_ENT:
-			break;
-			
-		case IDLE_STA:
-			
-//			UBaseType_t getStack = uxTaskGetStackHighWaterMark(NULL);
-//			char idleStr[30];
-//			sprintf((char *)idleStr, "stack balance %ld \r\n", getStack);
-			
-			if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE){
-				//vComPortMsg(idleStr);
-				vComPortMsg("idle state \r\n");
-				xSemaphoreGive(xMutex);
+		case (DEPLOY_STA):		
+			if (xTaskNotifyWaitIndexed(		
+					1,
+					0,
+					ULONG_MAX,
+					&ulEvents,
+					portMAX_DELAY) == pdPASS){
+				for (uint8_t tnwi = 0; tnwi < SW_COUNT; tnwi++){
+					if (ulEvents & (1U << (tnwi))){
+						ledToggle[tnwi]();
+						sprintf(dmaStr, "switch %d pressed and toggled led %d \r\n ", tnwi, tnwi);
+						if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE){
+							vComPortMsg(dmaStr);
+							xSemaphoreGive(xMutex);
+						}
+					}
+				}
+
 			}
 			break;
+		default: break;
 		}
-		vTaskDelay(pdMS_TO_TICKS(1000));
 	}
 }
 
