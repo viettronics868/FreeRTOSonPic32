@@ -25,6 +25,7 @@ void Lab17_DMAInit(void){
 }
 
 //function to transfer string from buffer to UART6
+//using index 0 of task notification for signaling DMA completion
 void vComPortMsg(char * msg){
 	sprintf((char *)u6TxBuffer, msg);
 	DCACHE_CLEAN_BY_ADDR(
@@ -37,7 +38,7 @@ void vComPortMsg(char * msg){
 				strlen((char *)u6TxBuffer),
 				(const void *)&U6TXREG, 1, 1);
 	ulTaskNotifyTakeIndexed(
-				0,
+				0, 
 				pdTRUE,
 				0);
 }
@@ -47,7 +48,7 @@ void vDMA0Callback(DMAC_TRANSFER_EVENT event, uintptr_t contextHandle){
 	if (event == DMAC_TRANSFER_EVENT_COMPLETE){
 		BaseType_t xHPTW = pdFALSE;
 		xTaskNotifyIndexedFromISR(
-			xTaskSTAHandle,	//task handle of Lab17STAmac
+			xTaskSTAHandle,	//task handle of the task of state machine Lab17STAmac
 			0,	//index 0 for DMA
 			0,	// value is ignored for eIncrement
 			eIncrement,

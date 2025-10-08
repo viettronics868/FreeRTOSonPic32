@@ -68,10 +68,6 @@
 #include "Lab17_Timers.h"
 #include "Lab17_SWxISR.h"
 
-//define interval of timers
-#define KEY_PRESSED_EVENT 0
-#define DEBOUNCE_PERIOD 50
-
 TaskHandle_t xTaskSTAHandle;
 
 //declare mutual exclusive

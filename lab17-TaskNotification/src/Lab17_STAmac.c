@@ -21,11 +21,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-//#define BIT_SW1 (1U << 1)
-//#define BIT_SW2 (1U << 2)
-//#define BIT_SW3 (1U << 3)
-//#define BIT_SW4 (1U << 4)
-
 Lab17State_t currentSTA = INIT_STA;
 extern SemaphoreHandle_t xMutex;
 

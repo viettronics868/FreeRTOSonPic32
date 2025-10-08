@@ -31,27 +31,11 @@ void vSWxISRCallback(GPIO_PIN pin, uintptr_t context){
 	}
 }
 
-
-//implement callback for SW1 pressing and ISR firing
-//void vSW1ISRCallback(GPIO_PIN pin, uintptr_t context){
-//	//start debounce timer for SW key press
-//	BaseType_t xHPTW = pdFALSE;
-//	if (xTimerStartFromISR(
-//			xSW1DebounceTimer,
-//			&xHPTW) == pdFALSE){
-//		Debug_msg("no debounce timer for SW1 \r\n");
-//		exit(EXIT_FAILURE);
-//	}
-//	portEND_SWITCHING_ISR(xHPTW);
-//	
-//}
-
 void Lab17_SWxISRInit(void){
 	
 	for (uint8_t isr = 0; isr < SW_COUNT ; isr++){
 		GPIO_PinInterruptCallbackRegister(
-					SW_[isr],
-					//vSW1ISRCallback,
+					SW_[isr],					
 					vSWxISRCallback,
 					0);
 		GPIO_PinInterruptEnable(SW_[isr]);
