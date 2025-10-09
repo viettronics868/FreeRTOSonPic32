@@ -39,4 +39,7 @@ Curiority 2.0 pic32 mz ef board
 ## Event Group Synchronization
 * [Using LED blinking to implement event group synchronization]
 
+## Task Notification
+* [Implementation task notification on pressing on-board switches]
+* [refactoring the source code and transform from monolithic main.c into a modular, professional-grade structure]
 (continue)
