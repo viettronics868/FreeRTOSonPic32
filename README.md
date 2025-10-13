@@ -43,4 +43,7 @@ Curiority 2.0 pic32 mz ef board
 * [Task Notification]
 * [Extra work: Refactor source code of the labs]
 
+## Stream Buffer
+* [Applied Stream Buffer on data transfer from UART6 input to UART1 output]
+* [Unit Test on UART1 and external USB-TTL 5V adaptor]
 (continue)
