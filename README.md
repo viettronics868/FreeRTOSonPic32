@@ -1,7 +1,7 @@
 # Labs-With-FreeRTOS
 This repository includes many labs designed to help users to get
 started with the FreeRTOS Kernel on curiosity 2.0 pic32 mz ef board. The repo 
-is updating whenever the new  lab completes.
+is updating whenever the new  lab or the code snippet for testing is completed.
 
 # Hardware use:
 Curiority 2.0 pic32 mz ef board
