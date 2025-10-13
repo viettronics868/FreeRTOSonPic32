@@ -12,6 +12,9 @@
 
 void Debug1_msg(char * msg);
 void Debug6_msg(char * msg);
+void Echo_msg(void);
+void Echo_msg_13_07(void);
+void Echo_msg_07_13(void);
 
 #ifdef	__cplusplus
 extern "C" {

@@ -13,23 +13,32 @@ StackType_t xTaskSTAStackBuffer[configMINIMAL_STACK_SIZE];
 Lab19States_t currentState = INIT_STA;
 
 void xTaskSTAma(void * pvParams){
-	for (;;){
+	for (; ; ){
 		switch (currentState){
 		case INIT_STA:
-			Debug1_msg("INIT- com 13 \r\n");
+			Debug1_msg("\r\n enter character on COM13\r\n");
+			for (uint8_t uart1=0; uart1 < 5; uart1++){
+				Echo_msg_13_07();
+				//Debug1_msg("\r\n");
+			}
 			currentState = DEPLOY_STA;
 			LED_G_Toggle();
 			LED_B_Toggle();
+			
 			break;
 		case DEPLOY_STA:
-			Debug6_msg("DEPLOY- com 7 \r\n");
+			Debug6_msg("\r\n enter character on COM7 \r\n");
+			for (uint8_t uart6=0; uart6 < 5; uart6++){
+				Echo_msg_07_13();
+				//Debug6_msg("\r\n");
+			}
 			currentState = INIT_STA;
 			LED_R_Toggle();
 			LED_G_Toggle();
 			break;
 		}
 		
-		vTaskDelay(pdMS_TO_TICKS(2000));
+		//vTaskDelay(pdMS_TO_TICKS(100));
 	}
 }
 
