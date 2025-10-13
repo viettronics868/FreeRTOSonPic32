@@ -45,5 +45,7 @@ Curiority 2.0 pic32 mz ef board
 
 ## Stream Buffer
 * [Applied Stream Buffer on data transfer from UART6 input to UART1 output]
-* [Unit Test on UART1 and external USB-TTL 5V adaptor]
+* [Unit Test on UART1 and external USB-TTL 5V adaptor - applying polling technique]
+* [Integration Test: UART1 as input and UART6 as output and then vice versa - applying polling technique]
+
 (continue)
