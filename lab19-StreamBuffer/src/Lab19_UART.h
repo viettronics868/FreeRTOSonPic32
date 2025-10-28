@@ -16,6 +16,9 @@ void Echo_msg(void);
 void Echo_msg_13_07(void);
 void Echo_msg_07_13(void);
 
+void vLab19_UART6_init(void);
+void U6RXCallback(uintptr_t context);
+
 #ifdef	__cplusplus
 extern "C" {
 #endif

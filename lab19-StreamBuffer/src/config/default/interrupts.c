@@ -66,13 +66,13 @@
 // Section: System Interrupt Vector declarations
 // *****************************************************************************
 // *****************************************************************************
-void UART1_FAULT_Handler (void);
-void UART1_RX_Handler (void);
-void UART1_TX_Handler (void);
 void CHANGE_NOTICE_C_Handler (void);
 void CHANGE_NOTICE_J_Handler (void);
 void DMA1_Handler (void);
 void DMA6_Handler (void);
+void UART6_FAULT_Handler (void);
+void UART6_RX_Handler (void);
+void UART6_TX_Handler (void);
 
 
 // *****************************************************************************
@@ -81,21 +81,6 @@ void DMA6_Handler (void);
 // *****************************************************************************
 // *****************************************************************************
 
-
-void __attribute__((used)) UART1_FAULT_Handler (void)
-{
-    UART1_FAULT_InterruptHandler();
-}
-
-void __attribute__((used)) UART1_RX_Handler (void)
-{
-    UART1_RX_InterruptHandler();
-}
-
-void __attribute__((used)) UART1_TX_Handler (void)
-{
-    UART1_TX_InterruptHandler();
-}
 
 void __attribute__((used)) CHANGE_NOTICE_C_Handler (void)
 {
@@ -115,6 +100,21 @@ void __attribute__((used)) DMA1_Handler (void)
 void __attribute__((used)) DMA6_Handler (void)
 {
     DMA6_InterruptHandler();
+}
+
+void __attribute__((used)) UART6_FAULT_Handler (void)
+{
+    UART6_FAULT_InterruptHandler();
+}
+
+void __attribute__((used)) UART6_RX_Handler (void)
+{
+    UART6_RX_InterruptHandler();
+}
+
+void __attribute__((used)) UART6_TX_Handler (void)
+{
+    UART6_TX_InterruptHandler();
 }
 
 

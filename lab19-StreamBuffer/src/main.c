@@ -31,7 +31,13 @@
 #include "Lab19_STA.h"
 #include "Lab19_DMA.h"
 #include "Lab19_UART.h"
+#include "Lab19_Timer.h"
+#include "Lab19_STREAMBUFFER.h"
 #include "task.h"
+#include "semphr.h"
+
+SemaphoreHandle_t xMutex;
+SemaphoreHandle_t xSemBin;
 
 void Lab19_Initialize(void){
 	
@@ -39,11 +45,19 @@ void Lab19_Initialize(void){
 	LED_B_Clear();
 	LED_G_Clear();
 	LED_R_Clear();
+	//LED2_Clear();
+	
+	xMutex = xSemaphoreCreateMutex();
+	xSemBin = xSemaphoreCreateBinary();
 	
 	vLab19_STA_init();
 	vLab19_DMA1_init();
 	vLab19_DMA6_init();
+	vLab19_UART6_init();
+	vLab19_Timer_init();
+	vLab19_StrmBuff_init();
 	
+		
 	
 }
 

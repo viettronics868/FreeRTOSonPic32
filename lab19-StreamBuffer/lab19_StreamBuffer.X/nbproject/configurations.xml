@@ -39,6 +39,9 @@
           <itemPath>../src/Lab19_DMA.h</itemPath>
           <itemPath>../src/Lab19_STA.h</itemPath>
           <itemPath>../src/Lab19_UART.h</itemPath>
+          <itemPath>../src/Lab19_STREAMBUFFER.h</itemPath>
+          <itemPath>../src/Lab19_Timer.h</itemPath>
+          <itemPath>../src/Lab19_config.h</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="FreeRTOS" displayName="FreeRTOS" projectFiles="true">
@@ -141,6 +144,9 @@
           <itemPath>../src/Lab19_DMA.c</itemPath>
           <itemPath>../src/Lab19_STA.c</itemPath>
           <itemPath>../src/Lab19_UART.c</itemPath>
+          <itemPath>../src/Lab19_STREAMBUFFER.c</itemPath>
+          <itemPath>../src/Lab19_Timer.c</itemPath>
+          <itemPath>../src/Lab19_config.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="FreeRTOS" displayName="FreeRTOS" projectFiles="true">
@@ -232,7 +238,7 @@
         <property key="exclude-floating-point" value="false"/>
         <property key="expand-pragma-config" value="false"/>
         <property key="extra-include-directories"
-                  value="../src;../src/config/default;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;..\src\config\default;..\src\config\default\peripheral\gpio"/>
+                  value="../src;../src/config/default;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;..\src\config\default;..\src\config\default\peripheral\cache;..\src\config\default\peripheral\dmac;..\src\config\default\peripheral\gpio;..\src\config\default\peripheral\uart"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
@@ -621,8 +627,6 @@
                   value="${memories.instruction.ram.ranges}"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="1d000000-33ffffff"/>
-        <property key="programmerToGoFilePath"
-                  value="C:/Users/tuiday/Documents/Lab-FreeRTOS/lab19-StreamBuffer/lab19_StreamBuffer.X/debug/default/lab19_StreamBuffer_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.pgmentry.voltage" value="low"/>

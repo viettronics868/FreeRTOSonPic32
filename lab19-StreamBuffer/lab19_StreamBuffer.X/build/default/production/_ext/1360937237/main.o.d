@@ -17,9 +17,16 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
  ../src/third_party/rtos/FreeRTOS/Source/include/deprecated_definitions.h \
  ../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ/portmacro.h \
  ../src/third_party/rtos/FreeRTOS/Source/include/mpu_wrappers.h \
- ../src/Lab19_STA.h ../src/Lab19_DMA.h ../src/Lab19_UART.h \
+ ../src/Lab19_STA.h ../src/Lab19_DMA.h \
+ ../src/config/default/peripheral/dmac/plib_dmac.h ../src/Lab19_UART.h \
+ ../src/Lab19_Timer.h \
+ ../src/third_party/rtos/FreeRTOS/Source/include/timers.h \
  ../src/third_party/rtos/FreeRTOS/Source/include/task.h \
- ../src/third_party/rtos/FreeRTOS/Source/include/list.h
+ ../src/third_party/rtos/FreeRTOS/Source/include/list.h \
+ ../src/Lab19_config.h ../src/Lab19_STREAMBUFFER.h \
+ ../src/third_party/rtos/FreeRTOS/Source/include/task.h \
+ ../src/third_party/rtos/FreeRTOS/Source/include/semphr.h \
+ ../src/third_party/rtos/FreeRTOS/Source/include/queue.h
 
 ../src/config/default/definitions.h:
 
@@ -61,8 +68,24 @@ build/default/production/_ext/1360937237/main.o: ../src/main.c \
 
 ../src/Lab19_DMA.h:
 
+../src/config/default/peripheral/dmac/plib_dmac.h:
+
 ../src/Lab19_UART.h:
+
+../src/Lab19_Timer.h:
+
+../src/third_party/rtos/FreeRTOS/Source/include/timers.h:
 
 ../src/third_party/rtos/FreeRTOS/Source/include/task.h:
 
 ../src/third_party/rtos/FreeRTOS/Source/include/list.h:
+
+../src/Lab19_config.h:
+
+../src/Lab19_STREAMBUFFER.h:
+
+../src/third_party/rtos/FreeRTOS/Source/include/task.h:
+
+../src/third_party/rtos/FreeRTOS/Source/include/semphr.h:
+
+../src/third_party/rtos/FreeRTOS/Source/include/queue.h:

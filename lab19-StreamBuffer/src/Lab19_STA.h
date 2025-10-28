@@ -10,10 +10,7 @@
 #ifndef LAB19_STA_H
 #define	LAB19_STA_H
 
-typedef enum{
-            INIT_STA,
-            DEPLOY_STA,
-} Lab19States_t;
+
 
 void xTaskSTAma(void * pvParams);
 void vLab19_STA_init(void);

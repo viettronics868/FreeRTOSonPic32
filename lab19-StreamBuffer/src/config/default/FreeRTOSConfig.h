@@ -89,7 +89,7 @@
  * (in words, not in bytes!).  The kernel does not use this constant for any other
  * purpose.  Demo applications use the constant to make the demos somewhat portable
  * across hardware architectures. */
-#define configMINIMAL_STACK_SIZE                ( 256 )
+#define configMINIMAL_STACK_SIZE                ( 512 )
 
 /* configMAX_TASK_NAME_LEN sets the maximum length (in characters) of a task's
  * human readable name.  Includes the NULL terminator. */
@@ -206,7 +206,7 @@
  * timer task (in words, not in bytes!).  The timer task is a standard FreeRTOS
  * task.  See https://www.freertos.org/RTOS-software-timer-service-daemon-task.html
  * Only used if configUSE_TIMERS is set to 1. */
-#define configTIMER_TASK_STACK_DEPTH            512
+#define configTIMER_TASK_STACK_DEPTH            1024
 
 /* configTIMER_QUEUE_LENGTH sets the length of the queue (the number of discrete
  * items the queue can hold) used to send commands to the timer task.  See
@@ -283,7 +283,7 @@
 /******************************************************************************/
 
 #define configPERIPHERAL_CLOCK_HZ               ( 100000000UL )
-#define configISR_STACK_SIZE                    ( 512 )
+#define configISR_STACK_SIZE                    ( 1024 )
 /* configKERNEL_INTERRUPT_PRIORITY sets the priority of the tick and context
  * switch performing interrupts.  Not supported by all FreeRTOS ports.  See
  * https://www.freertos.org/RTOS-Cortex-M3-M4.html for information specific to
@@ -371,6 +371,24 @@
  * to the application co-routines. Any number of co-routines can share the same
  * priority. Defaults to 0 if left undefined. */
 #define configMAX_CO_ROUTINE_PRIORITIES         2
+
+/******************************************************************************/
+/* Debugging assistance. ******************************************************/
+/******************************************************************************/
+
+/* configASSERT() has the same semantics as the standard C assert().  It can
+ * either be defined to take an action when the assertion fails, or not defined
+ * at all (i.e. comment out or delete the definitions) to completely remove
+ * assertions.  configASSERT() can be defined to anything you want, for example
+ * you can call a function if an assert fails that passes the filename and line
+ * number of the failing assert (for example, "vAssertCalled( __FILE__, __LINE__ )"
+ * or it can simple disable interrupts and sit in a loop to halt all execution
+ * on the failing line for viewing in a debugger. */
+/* Prevent C specific syntax being included in assembly files. */
+#ifndef __LANGUAGE_ASSEMBLY
+    void vAssertCalled( const char *pcFileName, unsigned long ulLine );
+    #define configASSERT( x ) if( ( x ) == 0 ) vAssertCalled( __FILE__, __LINE__ )
+#endif
 
 
 /******************************************************************************/
