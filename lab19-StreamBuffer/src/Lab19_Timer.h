@@ -10,8 +10,6 @@
 #ifndef LAB19_TIMER_H
 #define	LAB19_TIMER_H
 
-//#define IDLE_TIMEOUT 50
-//#define REQUEST_TIMEOUT 5000
 
 #include "FreeRTOS.h"
 #include "timers.h"
@@ -26,11 +24,6 @@
  * @param xTicksToWait	How long to wait if the first attempt fails (bounded wait)
  * @return			pdPASS if successful, pdFAIL otherwise
  */
-//typedef enum{
-//            EVENT_START,
-//            EVENT_STOP,
-//            EVENT_RESET
-//}TimerEvent_t;
 
 BaseType_t customTimerHelper(
                                             BaseType_t (*func)(TimerHandle_t, TickType_t),

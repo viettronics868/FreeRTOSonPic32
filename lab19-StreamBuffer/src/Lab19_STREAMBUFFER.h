@@ -10,8 +10,6 @@
 #ifndef LAB19_STREAMBUFFER_H
 #define	LAB19_STREAMBUFFER_H
 
-//#define RX_STREAM_BUFFER_SIZE 128
-
 void vLab19_StrmBuff_init(void);
 
 

@@ -1,5 +1,10 @@
 /*
- 
+ the files Lab19_config.c / .h are implementing a central config pattern that can gain control and consistency across the entire lab19 -
+ * without touching multiple .C files
+ * inside Lab19_config.h , there is a define of DEBUG flag for Global Debug Control
+ * When #define DEBUG is active, the debug section of code compiles in. 
+ * In the case of commenting out #define DEBUG, the preprocessor removes all debug code during compilation, so no runtime
+ * overhead at all.
  */
 
 #include <stdint.h>

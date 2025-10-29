@@ -1,6 +1,12 @@
 /*
- * Lab19 is using a timer to check periodically timeout (50ms) to flush UART6 FIFO buffer 
- * Implementation of the Timer-based "idle flush" mechanism 
+ * Lab19_Timer.c / .h are using an Idle timer to check periodically timeout (50ms) to flush UART6 FIFO buffer 
+ * Implementation of the Timer-based "idle flush" mechanism .
+ * this Lab is also building a custom timer API layer on top of FreeRTOS. It is the first step of building system frameworks.
+ * This is the same principle used in:
+ * - Microchip Harmony Framework
+ * - STM32 HAL abstraction layers
+ * - QP/QXK event frameworks
+ * - modern RTOS-based middleware
  */
 
 #include "FreeRTOS.h"
@@ -35,6 +41,7 @@ BaseType_t TimerReset(TimerHandle_t xTimer, TickType_t xTicksToWait){
 }
 TimerEvent_t eventTimer;
 BaseType_t customTimerHelper(
+			//func is pointer to a function that takes (TimerHandle_t, TickType_t) and returns BaseType_t
 			BaseType_t (*func)(TimerHandle_t xTimer, TickType_t xTicksToWait),
 			TimerHandle_t xTimer,
 			TickType_t xTicksToWait){
@@ -44,11 +51,11 @@ BaseType_t customTimerHelper(
 	}
 	
 	//the block #ifdef ... #endif makes this line of code is for debug only
-	#ifdef DEBUG
+#ifdef DEBUG
 	if (result != pdPASS){
 		Debug6_msg("[WARN] custom Timer API failed\r\n");
 	}
-	#endif
+#endif
 
 	return result;
 }
@@ -56,16 +63,13 @@ BaseType_t customTimerHelper(
 BaseType_t customTimerAPI(TimerHandle_t xTimer, TimerEvent_t event){
 	BaseType_t result = pdFAIL;
 	switch (event){
-	case EVENT_START:
-		//result = customTimerHelper((void *)xTimerStart(xTimer, 0), xTimer, pdMS_TO_TICKS(10));
+	case EVENT_START:		
 		result = customTimerHelper(TimerStart, xTimer, pdMS_TO_TICKS(10));
 		break;
-	case EVENT_STOP:
-		//result = customTimerHelper((void *)xTimerStop(xTimer, 0), xTimer, pdMS_TO_TICKS(10));
+	case EVENT_STOP:		
 		result = customTimerHelper(TimerStop, xTimer, pdMS_TO_TICKS(10));
 		break;
-	case EVENT_RESET:
-		//result = customTimerHelper((void *)xTimerReset(xTimer,0), xTimer, pdMS_TO_TICKS(10));
+	case EVENT_RESET:		
 		result = customTimerHelper(TimerReset, xTimer, pdMS_TO_TICKS(10));
 		break;
 	default: break;
@@ -126,28 +130,14 @@ void vIdleTimerHandler(TimerHandle_t xTimer){
 		
 	BaseType_t xHPTW = pdFALSE;
 	
-	//stop Idle Timer to prevent race condition. Then Idle Timer will be reseted in core task after the new character 
-	//is added to the buffer
-	//xTimerStopFromISR(xRxIdleTimer, &xHPTW);
-	
 	while (_U6STA_URXDA_MASK == (U6STA & _U6STA_URXDA_MASK)){
 		uint8_t charac = U6RXREG;
 		xStreamBufferSendFromISR(
 					xUart6RxStream,
 					&charac,
 					1,
-					&xHPTW);
-		//Debug6_msg((char[]){charac,'\0'});
-		
-		
-		
-		//reset REQUEST Timer
-		//xTimerResetFromISR(xRequestTimer, &xHPTW);
-	}
-	
-	//reset IDLE Timer
-	//xTimerResetFromISR(xRxIdleTimer, &xHPTW);
-	
+					&xHPTW);		
+	}	
 	portEND_SWITCHING_ISR(xHPTW);
 }
 

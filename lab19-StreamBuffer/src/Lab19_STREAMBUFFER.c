@@ -1,5 +1,5 @@
 /*
- 
+ the files Lab19_STREAMBUFFER.c / .h are for initialization code of the stream buffer
  */
 
 #include "FreeRTOS.h"

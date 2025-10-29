@@ -1,5 +1,8 @@
 /*
- 
+ The source file Lab19_DMA.c included the files for initializing the callbacks of DMA1 And DMA6
+ * the function vShowMsgD1U1 is showing the messages in fix-length buffer.
+ * the function vStrmU1Tx is showing the message with variable-length buffer
+ * The FreeRTOS synchronization primitives like mutex and binary semaphore are applied
  */
 
 #include <string.h>
@@ -40,19 +43,14 @@ void vLab19_DMA1_init(void){
 
 void vShowMsgD1U1(char * msg){
 	
-	//sprintf((char *)u1TxBuffer,"%s", msg);
 	if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE){
 		DCACHE_CLEAN_BY_ADDR(
-					//(uint32_t)u1TxBuffer,
-			(uint32_t)msg,
-					//strlen((char *)u1TxBuffer));
-			strlen((char *)msg));
+					(uint32_t)msg,
+					strlen((char *)msg));
 		DMAC_ChannelTransfer(
 				DMAC_CHANNEL_1,
-				//(const void *)u1TxBuffer,
-			(const void *)msg,
-				//strlen((const char*)u1TxBuffer),
-			strlen((const char *)msg),
+				(const void *)msg,
+				strlen((const char *)msg),
 				(const void *)&U1TXREG, 1, 1);
 		xSemaphoreTake(xSemBin, portMAX_DELAY);
 
@@ -61,20 +59,15 @@ void vShowMsgD1U1(char * msg){
 }
 
 void vStrmU1Tx(char * msg, size_t size){
-	//sprintf((char *)u1TxBuffer, "%s", msg);
 	if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE){
 		
 		DCACHE_CLEAN_BY_ADDR(
 					(uint32_t)msg,
-					size+1);
-					//size+3);
-					//size+5);
+					size);
 		DMAC_ChannelTransfer(
 				DMAC_CHANNEL_1,
 				(const void *)msg,
-				size+1,	
-				//size+3,
-				//size+5,
+				size,
 				(const void *)&U1TXREG, 1, 1);
 		xSemaphoreTake(xSemBin, portMAX_DELAY);
 		xSemaphoreGive(xMutex);
