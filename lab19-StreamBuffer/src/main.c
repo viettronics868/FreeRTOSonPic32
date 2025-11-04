@@ -89,6 +89,7 @@ void Lab19_Initialize(void){
 	xSemBin = xSemaphoreCreateBinary();
 	
 	vLab19_STA_init();
+	vLab19_DMA0_init();
 	vLab19_DMA1_init();
 	vLab19_DMA6_init();
 	vLab19_UART6_init();

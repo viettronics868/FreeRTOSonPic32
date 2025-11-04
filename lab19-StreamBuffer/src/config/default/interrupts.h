@@ -58,6 +58,7 @@
 // *****************************************************************************
 void CHANGE_NOTICE_C_InterruptHandler( void );
 void CHANGE_NOTICE_J_InterruptHandler( void );
+void DMA0_InterruptHandler( void );
 void DMA1_InterruptHandler( void );
 void DMA6_InterruptHandler( void );
 void UART6_FAULT_InterruptHandler( void );

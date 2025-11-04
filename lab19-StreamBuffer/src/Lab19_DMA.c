@@ -74,9 +74,41 @@ void vStrmU1Tx(char * msg, size_t size){
 	}
 }
 
+void vLab19DMA0Callback(DMAC_TRANSFER_EVENT event, uintptr_t context){
+	BaseType_t xHPTW = pdFALSE;
+	if (event == DMAC_TRANSFER_EVENT_COMPLETE){
+		xSemaphoreGiveFromISR(xSemBin, &xHPTW);
+		portEND_SWITCHING_ISR(xHPTW);
+	}
+}
+
+void vShowMsgD0U1(char * msg){
+	if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE){
+		DCACHE_CLEAN_BY_ADDR(
+					(uint32_t)msg,
+					strlen((char *)msg));
+		DMAC_ChannelTransfer(
+				DMAC_CHANNEL_0,
+				(const void *)msg,
+				strlen((char *)msg),
+				(const void *)&U1TXREG, 1, 1);
+		xSemaphoreTake(xSemBin, portMAX_DELAY);
+		xSemaphoreGive(xMutex);
+	}
+	
+}
+
+void vLab19_DMA0_init(void){
+	DMAC_ChannelCallbackRegister(
+				DMAC_CHANNEL_0,
+				vLab19DMA0Callback,
+				0);
+}
+
 void vLab19DMA6Callback(DMAC_TRANSFER_EVENT event, uintptr_t context){
 	
 }
+
 
 void vLab19_DMA6_init(void){
 	DMAC_ChannelCallbackRegister(

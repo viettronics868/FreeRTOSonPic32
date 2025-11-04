@@ -12,13 +12,16 @@
 
 #include "plib_dmac.h"
 
+void vLab19_DMA0_init(void);
 void vLab19_DMA1_init(void);
 void vLab19_DMA6_init(void);
 
+void vLab19DMA0Callback(DMAC_TRANSFER_EVENT event, uintptr_t context);
 void vLab19DMA1Callback(DMAC_TRANSFER_EVENT event, uintptr_t context);
 void vLab19DMA6Callback(DMAC_TRANSFER_EVENT event, uintptr_t context);
 
 void vShowMsgD1U1(char * msg);
+void vShowMsgD0U1(char * msg);
 void vStrmU1Tx(char * msg, size_t size);
 
 #ifdef	__cplusplus

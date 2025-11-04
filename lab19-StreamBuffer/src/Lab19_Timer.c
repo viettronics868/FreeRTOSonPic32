@@ -10,12 +10,26 @@
  */
 
 #include "FreeRTOS.h"
+#include "task.h"
 #include "timers.h"
 #include "Lab19_Timer.h"
 #include "Lab19_DMA.h"
 #include "Lab19_config.h"
 #include "Lab19_UART.h"
 #include "stream_buffer.h"
+#include <stdint.h>
+
+//idle timer 50 ticks a.k.a 50ms
+//static timer
+
+TimerHandle_t xRxIdleTimer;
+StaticTimer_t xRxIdleTimerBuffer;
+extern StreamBufferHandle_t xUart6RxStream;
+
+TimerHandle_t xRequestTimer;
+StaticTimer_t xRequestTimerBuffer;\
+
+extern TaskHandle_t xTaskSTAHandle;
 
 /**
  * @brief Safely executes the custom FreeRTOS timer api (Start/Stop/Reset)
@@ -77,17 +91,6 @@ BaseType_t customTimerAPI(TimerHandle_t xTimer, TimerEvent_t event){
 	return result;
 }
 
-
-//idle timer 50 ticks a.k.a 50ms
-//static timer
-
-TimerHandle_t xRxIdleTimer;
-StaticTimer_t xRxIdleTimerBuffer;
-extern StreamBufferHandle_t xUart6RxStream;
-
-TimerHandle_t xRequestTimer;
-StaticTimer_t xRequestTimerBuffer;
-
 //create Idle Timer here and then start Idle Timer in task State Machine
 void vLab19_Timer_init(void){
 	xRxIdleTimer = xTimerCreateStatic(
@@ -127,24 +130,24 @@ void vLab19_Timer_init(void){
 }
 
 void vIdleTimerHandler(TimerHandle_t xTimer){
-		
-	BaseType_t xHPTW = pdFALSE;
-	
+			
 	while (_U6STA_URXDA_MASK == (U6STA & _U6STA_URXDA_MASK)){
 		uint8_t charac = U6RXREG;
-		xStreamBufferSendFromISR(
+		
+		xStreamBufferSend(
 					xUart6RxStream,
 					&charac,
 					1,
-					&xHPTW);		
-	}	
-	portEND_SWITCHING_ISR(xHPTW);
+					portMAX_DELAY);
+	}		
+	
 }
 
 void vRequestTimerHandler(TimerHandle_t xTimer){
 	//using Request Timer's timeout to ask user to enter a message - using DMA1 and UART1 TX
 	//then reset xRequestTimer
-	vShowMsgD1U1("please enter a message and press Enter\r\n");
+
+	vShowMsgD0U1("please enter a message and press Enter\r\n");	
 	BaseType_t xHPTW = pdFALSE;
 	if (xTimerResetFromISR(
 			xRequestTimer, 

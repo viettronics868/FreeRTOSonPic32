@@ -68,6 +68,7 @@
 // *****************************************************************************
 void CHANGE_NOTICE_C_Handler (void);
 void CHANGE_NOTICE_J_Handler (void);
+void DMA0_Handler (void);
 void DMA1_Handler (void);
 void DMA6_Handler (void);
 void UART6_FAULT_Handler (void);
@@ -90,6 +91,11 @@ void __attribute__((used)) CHANGE_NOTICE_C_Handler (void)
 void __attribute__((used)) CHANGE_NOTICE_J_Handler (void)
 {
     CHANGE_NOTICE_J_InterruptHandler();
+}
+
+void __attribute__((used)) DMA0_Handler (void)
+{
+    DMA0_InterruptHandler();
 }
 
 void __attribute__((used)) DMA1_Handler (void)

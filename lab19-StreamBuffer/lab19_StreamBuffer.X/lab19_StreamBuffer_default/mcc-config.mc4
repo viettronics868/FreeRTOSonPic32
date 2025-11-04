@@ -1,9 +1,8 @@
 configVersion: 1.0.0
-coreVersion: 5.8.2
-spaHostVersion: 1.0.0
+coreVersion: 5.8.3
+spaHostVersion: 1.2.0
 device: PIC32MZ2048EFM144
-deviceLibrary:
-  className: null
+deviceLibrary: {}
 groupModules: []
 modules:
 - FreeRTOS
@@ -13,7 +12,7 @@ modules:
 - uart6
 generatedFileHashHistoryMap:
 - file: ..\src\config\default\FreeRTOSConfig.h
-  hash: 298621e355fffeab62736c6bce3dbbc28971a246a4b860db0958b04655aa271c
+  hash: 41d7cfc7e440f9ed5245e75415dafb1a737eefde35d367f01ea60afa2d0abdfa
 - file: ..\src\config\default\definitions.h
   hash: 1cd7da0110d4413077f4dffe9694a73ffab6fbec7d4549cdf1dc6ee43b6386d0
 - file: ..\src\config\default\device.h
@@ -27,11 +26,11 @@ generatedFileHashHistoryMap:
 - file: ..\src\config\default\initialization.c
   hash: a09ff8b330e2c4fd50d21e368f5976c9c708b847e9b853be4cc4939b24aa758f
 - file: ..\src\config\default\interrupts.c
-  hash: 3651c549b36bd91e17a4d98075143ac486feda0633ad05fa00683756c8db7f5d
+  hash: 3209f1a68e3ed4f077df9121e338af627c9b1aaf5e569b1c3995684d556eb2d3
 - file: ..\src\config\default\interrupts.h
-  hash: bf3eec72a15e12461228af386a83be94f929a61acf41c1604d5acdad5e7849cb
+  hash: 10b7481ab9657eebbcd9e04b3900f8a03c11bb46d845a638440a501c82ff278e
 - file: ..\src\config\default\interrupts_a.S
-  hash: a2073e23949d39114d2928798c357b43e0604870e56b8690f0033b08e3e801e7
+  hash: f00546b3e70ce5af99fcd8d9d4474b0ffb21d20064e8c794c845e62c5d89b4e5
 - file: ..\src\config\default\p32MZ2048EFM144.ld
   hash: 46672b0a06fb42db5538d8da4ec36d5fcc0498ab85defe9a284be2853972bf25
 - file: ..\src\config\default\peripheral\cache\plib_cache.c
@@ -49,11 +48,11 @@ generatedFileHashHistoryMap:
 - file: ..\src\config\default\peripheral\clk\plib_clk.h
   hash: 35384f2e13e59b7190bf77f6996baf3ea2377ec42df94979a6f793326def5255
 - file: ..\src\config\default\peripheral\dmac\plib_dmac.c
-  hash: 70099c1e7b4f2fc80f0e4f1c13f18b3aa495cbcdf71e10fd1fcfcaf6062df4c2
+  hash: 7bd23143ee0c8754d2c564ae9d28faf88d185e605cab3d8dd3830fe9b987b0ce
 - file: ..\src\config\default\peripheral\dmac\plib_dmac.h
   hash: 78b9533671371600d12031eb6280ef51c292677cc636c809bb1b16ab772a4f8d
 - file: ..\src\config\default\peripheral\evic\plib_evic.c
-  hash: 279125dc6e78473a365f95bcfb93c1ca139b651e600e1a36ab36769f3d3577cd
+  hash: a344b83935388591b69bc6d20f2fe6fedec6b4f30d247b8d15ee586f6bededcb
 - file: ..\src\config\default\peripheral\evic\plib_evic.h
   hash: 8d23fbec497272607e866c677642a16f99b84018980cee72d0df73db1f696194
 - file: ..\src\config\default\peripheral\gpio\plib_gpio.c

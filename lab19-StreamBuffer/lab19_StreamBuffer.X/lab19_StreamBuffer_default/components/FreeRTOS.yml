@@ -1,6 +1,6 @@
 configVersion: 1.0.0
 componentName: FreeRTOS
-coreVersion: 5.8.2
+coreVersion: 5.8.3
 device: PIC32MZ2048EFM144
 library: []
 dependency:
@@ -240,6 +240,26 @@ data:
     FREERTOS_USE_CONFIGASSERT:
       attributes:
         id: FREERTOS_USE_CONFIGASSERT
+      children:
+      - children:
+        - attributes:
+            value: 'true'
+          type: User
+        type: Values
+      type: Boolean
+    FREERTOS_TASK_NOTIFICATION_ARRAY_ENTRIES:
+      attributes:
+        id: FREERTOS_TASK_NOTIFICATION_ARRAY_ENTRIES
+      children:
+      - children:
+        - attributes:
+            value: '3'
+          type: User
+        type: Values
+      type: Integer
+    FREERTOS_USE_TASK_FPU_SUPPORT:
+      attributes:
+        id: FREERTOS_USE_TASK_FPU_SUPPORT
       children:
       - children:
         - attributes:

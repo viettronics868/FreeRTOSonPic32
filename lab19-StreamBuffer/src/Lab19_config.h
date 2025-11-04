@@ -23,11 +23,18 @@
 #define RX6_BUFFER_SIZE 128
 #define RX_BUFFER_SIZE 128
 
-#define IDLE_TIMEOUT 50
+#define IDLE_TIMEOUT 100
 #define REQUEST_TIMEOUT 10000
+
+#define TIMER_U6RX_INDEX (0U)
+#define U6RX_INDEX (1U)
+#define BIT_U6RX_FULL (1U << 0U)
+#define BIT_IDLE_TIMEOUT (1U << 1U)
+
 
 typedef enum{
             INIT_STA,
+            //NOTIFY_STA,
             WAIT_MSG_STA,
             STRM_U1TX_STA,
 } Lab19States_t;

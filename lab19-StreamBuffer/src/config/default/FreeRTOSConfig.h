@@ -121,7 +121,7 @@
  * configTASK_NOTIFICATION_ARRAY_ENTRIES sets the number of indexes in the array.
  * See https://www.freertos.org/RTOS-task-notifications.html  Defaults to 1 if
  * left undefined. */
-#define configTASK_NOTIFICATION_ARRAY_ENTRIES      1
+#define configTASK_NOTIFICATION_ARRAY_ENTRIES      3
 
 /* configQUEUE_REGISTRY_SIZE sets the maximum number of queues and semaphores
  * that can be referenced from the queue registry.  Only required when using a
@@ -403,7 +403,7 @@
 #define configUSE_COUNTING_SEMAPHORES           1
 #define configUSE_QUEUE_SETS                    0
 #define configUSE_APPLICATION_TASK_TAG          0
-#define configUSE_TASK_FPU_SUPPORT              0
+#define configUSE_TASK_FPU_SUPPORT              1
 
 
 /* Set the following INCLUDE_* constants to 1 to incldue the named API function,

@@ -22,6 +22,7 @@ extern Lab19States_t currentState;
 extern StreamBufferHandle_t xUart6RxStream;
 extern TimerHandle_t xRxIdleTimer;
 extern TimerHandle_t xRequestTimer;
+extern TaskHandle_t xTaskSTAHandle;
 
 //using UART1 and external USB_TTL adaptor (5V level) for showing messages on COM13
 void Debug1_msg(char * msg1){
@@ -81,13 +82,22 @@ void U6RXCallback(uintptr_t context){
 	BaseType_t xHPTW = pdFALSE;
 	//a small loop inside UART ISRs ? to empty the FIFO completely.
 	//It?s safe, deterministic, and required for data reliability.
+	
 	while (_U6STA_URXDA_MASK == (U6STA & _U6STA_URXDA_MASK)){
 		uint8_t chr = U6RXREG;
 		xStreamBufferSendFromISR(
 					xUart6RxStream,
 					&chr,
 					1,
-					&xHPTW);	
+					&xHPTW);
+		
+		//Notify the core state machine task about 4-byte deep receive on UART6 RX
+//		xTaskNotifyIndexedFromISR(
+//					xTaskSTAHandle,
+//					TIMER_U6RX_INDEX,
+//					BIT_U6RX_FULL,
+//					eSetBits,
+//					&xHPTW);
 				
 	}
 	

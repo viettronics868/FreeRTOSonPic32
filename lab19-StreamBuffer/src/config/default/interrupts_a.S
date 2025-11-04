@@ -88,6 +88,24 @@ IntVectorCHANGE_NOTICE_J_Handler:
     nop
     portRESTORE_CONTEXT
     .end   IntVectorCHANGE_NOTICE_J_Handler
+    .extern  DMA0_Handler
+
+    .section   .vector_134,code, keep
+    .equ     __vector_dispatch_134, IntVectorDMA0_Handler
+    .global  __vector_dispatch_134
+    .set     nomicromips
+    .set     noreorder
+    .set     nomips16
+    .set     noat
+    .ent  IntVectorDMA0_Handler
+
+IntVectorDMA0_Handler:
+    portSAVE_CONTEXT
+    la    s6,  DMA0_Handler
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end   IntVectorDMA0_Handler
     .extern  DMA1_Handler
 
     .section   .vector_135,code, keep

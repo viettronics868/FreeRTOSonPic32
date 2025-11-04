@@ -19,6 +19,7 @@
 TaskHandle_t xTaskSTAHandle = NULL;
 StaticTask_t xTaskSTATcbBuffer;
 StackType_t xTaskSTAStackBuffer[configMINIMAL_STACK_SIZE];
+
 Lab19States_t currentState;
 
 extern uint8_t ucRxStreamBuffer[RX_STREAM_BUFFER_SIZE];
@@ -29,9 +30,11 @@ extern uint8_t u1TxBuffer[TX1_BUFFER_SIZE];
 
 uint8_t count_loop = 0;
 char count_msg[30];
-uint8_t charac;
+uint8_t input_charac;
+uint8_t cpy_charac;
 size_t leng_of_string = 0;
 size_t size_of = 0;
+uint32_t NotificationValue;
 
 void xTaskSTAma(void * pvParams){	
 	
@@ -52,6 +55,7 @@ void xTaskSTAma(void * pvParams){
 			vShowMsgD1U1((char *)count_msg);
 #endif			
 			currentState = WAIT_MSG_STA;
+			//currentState = NOTIFY_STA;
 						
 			//start Idle Timer auto-reload to check periodically U6STAbits.URXDA
 			//using customTimerAPI()
@@ -63,22 +67,26 @@ void xTaskSTAma(void * pvParams){
 			}
 			
 			break;
+			
+//		
+			
 		case WAIT_MSG_STA:
 			
-			LED1_Toggle();			
-			
+			LED2_Toggle();			
+						
 			//this variable for debug only
 			count_loop++;			
 			
 			//start REQUEST timer - 5s - single-shot
 			//apply defensive pattern
-			
 			if (customTimerAPI(xRequestTimer, EVENT_START) == pdFAIL){
 #ifdef DEBUG
 				Debug6_msg("cannot start Request Timer\r\n");
 #endif
 				exit(EXIT_FAILURE);
 			}			
+			
+			
 			
 			//for debug only
 #ifdef DEBUG
@@ -90,16 +98,17 @@ void xTaskSTAma(void * pvParams){
 			
 			if (xStreamBufferReceive(
 					xUart6RxStream,
-					&charac,
+					&cpy_charac,
 					1,
-					portMAX_DELAY) >0 ){
-					
+					portMAX_DELAY) >0 )
+			
+			{					
 				//echo the character immediately on Terminal for UART6 
 				//using compound literal / inline string built at runtime
-				Debug6_msg((char[]){charac,'\0'});
+				Debug6_msg((char[]){cpy_charac,'\0'});
 				
 				//check for Enter key press
-				if ((charac == '\n')){	
+				if ((cpy_charac == '\n')){	
 					//stop all timers - IDLE Timer and REQUEST Timer
 					//apply defensive pattern when stopping timers and logging if it fails
 					if (xTimerIsTimerActive(xRxIdleTimer) != pdFALSE){
@@ -127,18 +136,26 @@ void xTaskSTAma(void * pvParams){
 						}
 					}
 											
-					ucRxStreamBuffer[leng_of_string] = charac;
+					ucRxStreamBuffer[leng_of_string] = cpy_charac;
 					
 					//copy current string into u1TxBuffer
-					sprintf((char *)u1TxBuffer, "%s" , (char *) ucRxStreamBuffer);
+					//sprintf((char *)u1TxBuffer, "%s" , (char *) ucRxStreamBuffer);
+					memcpy((char*)u1TxBuffer, (char *)ucRxStreamBuffer, leng_of_string+1);
+					
+					//Reset stream buffer before starting the new round
+					xStreamBufferReset(xUart6RxStream);
+					
 					
 					//received Enter key and change State into STRM_U1TX_STA
 					currentState = STRM_U1TX_STA;
+					
 					size_of = leng_of_string +1;					
-					leng_of_string = 0; // reset the length for the next messaages
+					//size_of = leng_of_string;
+					leng_of_string = 0; // reset the length for the next messages
 										
 				} else {
-					ucRxStreamBuffer[leng_of_string++] = charac;			
+					ucRxStreamBuffer[leng_of_string++] = cpy_charac;
+					
 										
 				}
 			}
@@ -148,7 +165,10 @@ void xTaskSTAma(void * pvParams){
 			
 			count_loop++;
 			
-			LED2_Toggle();			
+			//LED2_Toggle();			
+			LED_R_Toggle();
+			LED_G_Toggle();
+			LED_B_Toggle();
 			
 			//send Stream Buffer to UART1 TX
 			vStrmU1Tx((char *)u1TxBuffer, size_of);
@@ -162,6 +182,10 @@ void xTaskSTAma(void * pvParams){
 #endif		
 			
 			currentState = WAIT_MSG_STA;			
+			
+			memset((char *)u1TxBuffer, 0, size_of);
+			memset((char *)ucRxStreamBuffer, 0, size_of);
+			
 			break;
 			
 		default: 
